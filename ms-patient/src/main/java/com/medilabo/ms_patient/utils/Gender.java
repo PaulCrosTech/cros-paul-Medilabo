@@ -8,6 +8,7 @@ import lombok.Getter;
  */
 @Getter
 public enum Gender {
+
     M("Masculin"),
     F("Féminin");
 
@@ -15,6 +16,7 @@ public enum Gender {
 
     /**
      * Constructor
+     *
      * @param description Description
      */
     Gender(String description) {
