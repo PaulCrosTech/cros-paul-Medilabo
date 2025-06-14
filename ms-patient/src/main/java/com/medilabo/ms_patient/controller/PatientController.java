@@ -75,4 +75,17 @@ public class PatientController {
         log.info("====> POST /patients <====");
         return patientService.create(patientDto);
     }
+
+    /**
+     * Updates an existing patient by their ID.
+     *
+     * @param id         the ID of the patient to update
+     * @param patientDto the data transfer object containing updated patient information
+     * @return the updated patient
+     */
+    @PutMapping(path = "/{id}", headers = "X-API-VERSION=1")
+    public Patient updatePatient(@PathVariable int id, @RequestBody @Valid PatientDto patientDto) {
+        log.info("====> PUT /patients/{} <====", id);
+        return patientService.update(id, patientDto);
+    }
 }
