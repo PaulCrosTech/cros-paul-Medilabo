@@ -1,7 +1,9 @@
 package com.medilabo.ms_patient.controller;
 
+import com.medilabo.ms_patient.dto.PatientDto;
 import com.medilabo.ms_patient.entity.Patient;
 import com.medilabo.ms_patient.service.IPatientService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,5 +62,17 @@ public class PatientController {
     public void deletePatientById(@PathVariable int id) {
         log.info("====> DELETE /patients/{} <====", id);
         patientService.deleteById(id);
+    }
+
+    /**
+     * Creates a new patient.
+     *
+     * @param patientDto the data transfer object containing patient information
+     * @return the created patient
+     */
+    @PostMapping(headers = "X-API-VERSION=1")
+    public Patient createPatient(@RequestBody @Valid PatientDto patientDto) {
+        log.info("====> POST /patients <====");
+        return patientService.create(patientDto);
     }
 }
