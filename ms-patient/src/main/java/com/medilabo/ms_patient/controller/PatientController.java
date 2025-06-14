@@ -3,10 +3,7 @@ package com.medilabo.ms_patient.controller;
 import com.medilabo.ms_patient.entity.Patient;
 import com.medilabo.ms_patient.service.IPatientService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,5 +49,16 @@ public class PatientController {
     public Patient getPatientById(@PathVariable int id) {
         log.info("====> GET /patients/{} <====", id);
         return patientService.findById(id);
+    }
+
+    /**
+     * Deletes a patient by their ID.
+     *
+     * @param id the ID of the patient to delete
+     */
+    @DeleteMapping(path = "/{id}", headers = "X-API-VERSION=1")
+    public void deletePatientById(@PathVariable int id) {
+        log.info("====> DELETE /patients/{} <====", id);
+        patientService.deleteById(id);
     }
 }
