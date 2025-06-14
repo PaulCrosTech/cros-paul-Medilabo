@@ -1,7 +1,7 @@
 package com.medilabo.ms_patient.validators.annotations;
 
 
-import com.medilabo.ms_patient.validators.DateValidator;
+import com.medilabo.ms_patient.validators.BirthDateValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -13,16 +13,16 @@ import java.lang.annotation.Target;
 /**
  * ValidDate Annotation
  */
-@Constraint(validatedBy = DateValidator.class)
+@Constraint(validatedBy = BirthDateValidator.class)
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidDate {
+public @interface ValidBirthDate {
     /**
      * message
      *
      * @return String
      */
-    String message() default "Invalid date format, expected format is yyyy-MM-dd";
+    String message() default "Birth date must be in past or present and in the format yyyy-MM-dd";
 
     /**
      * groups

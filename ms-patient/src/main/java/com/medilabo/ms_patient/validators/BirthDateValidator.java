@@ -1,17 +1,18 @@
 package com.medilabo.ms_patient.validators;
 
 
-import com.medilabo.ms_patient.validators.annotations.ValidDate;
+import com.medilabo.ms_patient.validators.annotations.ValidBirthDate;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * DateValidator Class
  */
-public class DateValidator implements ConstraintValidator<ValidDate, String> {
+public class BirthDateValidator implements ConstraintValidator<ValidBirthDate, String> {
 
     private String pattern;
 
@@ -21,20 +22,25 @@ public class DateValidator implements ConstraintValidator<ValidDate, String> {
      * @param constraintAnnotation the annotation
      */
     @Override
-    public void initialize(ValidDate constraintAnnotation) {
+    public void initialize(ValidBirthDate constraintAnnotation) {
         this.pattern = constraintAnnotation.pattern();
     }
 
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) {
+    public boolean isValid(String birthDate, ConstraintValidatorContext context) {
+        if (birthDate == null) {
             return true; // null is valid, use @NotNull for null checks
         }
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         sdf.setLenient(false);
+
         try {
-            sdf.parse(value);
+            Date parsedDate = sdf.parse(birthDate);
+            if (parsedDate.after(new Date())) {
+                return false;
+            }
+
         } catch (ParseException e) {
             return false;
         }

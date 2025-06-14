@@ -1,17 +1,12 @@
 package com.medilabo.ms_patient.dto;
 
-import com.medilabo.ms_patient.utils.Gender;
-import com.medilabo.ms_patient.validators.annotations.ValidDate;
+import com.medilabo.ms_patient.validators.annotations.ValidBirthDate;
 import com.medilabo.ms_patient.validators.annotations.ValidGender;
 import com.medilabo.ms_patient.validators.annotations.ValidPhoneNumber;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDate;
 
 /**
  * Data Transfer Object (DTO) for Patient entity.
@@ -29,8 +24,7 @@ public class PatientDto {
     private String lastName;
 
     @NotNull(message = "Birth date is mandatory.")
-    @ValidDate
-    // TODO : mettre LocalDate et in PAST or PRESENT, RAJOUTER LES LOG PARTOUT
+    @ValidBirthDate
     private String birthDate;
 
 
