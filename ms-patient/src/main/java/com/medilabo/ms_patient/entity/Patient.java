@@ -30,11 +30,16 @@ public class Patient {
     private String lastName;
 
     @Column(name = "birth_date", nullable = false)
-    private LocalDate birthDate;
+//    private LocalDate birthDate;
+    private String birthDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Gender gender;
+    //    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false)
+//    private Gender gender;
+    
+    @Column(nullable = false, columnDefinition = "ENUM('M', 'F')")
+    private String gender;
+
 
     @Column(length = 100)
     private String address;

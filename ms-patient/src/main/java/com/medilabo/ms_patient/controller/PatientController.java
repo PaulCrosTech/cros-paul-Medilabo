@@ -1,20 +1,43 @@
 package com.medilabo.ms_patient.controller;
 
+import com.medilabo.ms_patient.entity.Patient;
+import com.medilabo.ms_patient.service.IPatientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
+/**
+ * Controller for patient-related operations.
+ */
 @RestController
 @Slf4j
 @RequestMapping(path = "/patients")
 public class PatientController {
 
-    @GetMapping(headers = "X-API-VERSION=1")
-    public String getVersion() {
-        log.info("====> GET /patients : page <====");
-        return "Patient API Version 1.0";
+    private final IPatientService patientService;
+
+    /**
+     * Constructor for PatientController.
+     *
+     * @param patientService the service to handle patient operations
+     */
+    public PatientController(IPatientService patientService) {
+        this.patientService = patientService;
+        log.info("====> PatientController initialized <====");
     }
 
+    
+    /**
+     * Retrieves a list of all patients.
+     *
+     * @return a list of patients
+     */
+    @GetMapping(headers = "X-API-VERSION=1")
+    public List<Patient> getPatients() {
+        log.info("====> GET /patients : page <====");
+        return patientService.findAll();
+    }
 }
