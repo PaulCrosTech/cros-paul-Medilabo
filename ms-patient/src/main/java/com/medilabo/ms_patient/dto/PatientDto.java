@@ -5,7 +5,9 @@ import com.medilabo.ms_patient.validators.annotations.ValidGender;
 import com.medilabo.ms_patient.validators.annotations.ValidPhoneNumber;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 /**
@@ -13,6 +15,8 @@ import org.hibernate.validator.constraints.Length;
  * This class is used to transfer patient data between layers.
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PatientDto {
 
     @NotEmpty(message = "First name is mandatory.")
@@ -31,13 +35,6 @@ public class PatientDto {
     @NotNull(message = "Gender is mandatory.")
     @ValidGender
     private String gender;
-
-//    @Enumerated(EnumType.STRING)
-//    private Gender gender;
-
-//    @Pattern(regexp = "([MF])", message = "Gender must be (M)ale  or (F)emale.")
-//    private String gender;
-
 
     @Length(max = 100, message = "Address must be at most 100 characters.")
     private String address;
