@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit test class for the PatientService class.
+ */
 @ExtendWith(MockitoExtension.class)
 public class PatientServiceTest {
 
@@ -31,6 +34,9 @@ public class PatientServiceTest {
 
     private List<Patient> patients;
 
+    /**
+     * Sets up before each test.
+     */
     @BeforeEach
     public void setUpPerTest() {
         patientService = new PatientService(patientRepository, patientMapper);
