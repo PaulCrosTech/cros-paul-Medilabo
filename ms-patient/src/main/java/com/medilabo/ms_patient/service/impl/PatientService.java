@@ -51,7 +51,7 @@ public class PatientService implements IPatientService {
     @Override
     public Patient findById(Integer id) throws PatientNotFoundException {
         return patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with ID " + id + " not found"));
+                .orElseThrow(() -> new PatientNotFoundException(id));
     }
 
     /**
@@ -68,7 +68,7 @@ public class PatientService implements IPatientService {
                     patientRepository.deleteById(id);
                 },
                 () -> {
-                    throw new PatientNotFoundException("Patient with ID " + id + " not found");
+                    throw new PatientNotFoundException(id);
                 }
         );
     }
@@ -96,7 +96,7 @@ public class PatientService implements IPatientService {
     @Override
     public Patient update(Integer patientId, PatientDto patientDto) throws PatientNotFoundException {
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with ID " + patientId + " not found"));
+                .orElseThrow(() -> new PatientNotFoundException(patientId));
 
         patient.setFirstName(patientDto.getFirstName());
         patient.setLastName(patientDto.getLastName());

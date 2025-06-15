@@ -5,6 +5,8 @@ import com.medilabo.ms_patient.entity.Patient;
 import com.medilabo.ms_patient.service.IPatientService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,6 +73,7 @@ public class PatientController {
      * @return the created patient
      */
     @PostMapping(headers = "X-API-VERSION=1")
+    @ResponseStatus(HttpStatus.CREATED)
     public Patient createPatient(@RequestBody @Valid PatientDto patientDto) {
         log.info("====> POST /patients <====");
         return patientService.create(patientDto);
