@@ -8,6 +8,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/ms-patient/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-gateway/pom.xml" />
       </list>
     </option>
   </component>
