@@ -9,6 +9,7 @@
       <list>
         <option value="$PROJECT_DIR$/ms-patient/pom.xml" />
         <option value="$PROJECT_DIR$/ms-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-eureka/pom.xml" />
       </list>
     </option>
   </component>
