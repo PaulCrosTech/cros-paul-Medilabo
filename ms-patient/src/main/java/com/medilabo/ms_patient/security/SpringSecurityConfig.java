@@ -16,7 +16,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Spring Security configuration
+ * Spring Security configuration for the application.
  */
 @Configuration
 @EnableWebSecurity
@@ -40,49 +40,38 @@ public class SpringSecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().authenticated()
-//                )
-//                .httpBasic(Customizer.withDefaults())
-//                .build();
-//    }
 
+    /**
+     * Configures the UserDetailsService for authentication.
+     * This method creates an in-memory user with the specified username and password.
+     * It uses BCrypt for password encoding.
+     *
+     * @return a UserDetailsService that provides the in-memory user
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails userDetails = User
+                .withUsername(username)
+                .password(passwordEncoder().encode(password))
+                .roles("USER")
+                .build();
 
-//    /**
-//     * Configures the UserDetailsService for authentication.
-//     * This method creates an in-memory user with the specified username and password.
-//     * It uses BCrypt for password encoding.
-//     *
-//     * @return a UserDetailsService that provides the in-memory user
-//     */
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        UserDetails userDetails = User
-//                .withUsername(username)
-//                .password(passwordEncoder().encode(password))
-//                .roles("USER")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(userDetails);
-//    }
-//
-//    /**
-//     * Provides a PasswordEncoder bean for encoding passwords.
-//     *
-//     * @return a BCryptPasswordEncoder instance
-//     */
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+        return new InMemoryUserDetailsManager(userDetails);
+    }
 
+    /**
+     * Provides a PasswordEncoder bean for encoding passwords.
+     *
+     * @return a BCryptPasswordEncoder instance
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
