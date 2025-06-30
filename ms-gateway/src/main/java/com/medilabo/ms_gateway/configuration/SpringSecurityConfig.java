@@ -3,7 +3,6 @@ package com.medilabo.ms_gateway.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -52,11 +52,20 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+                .cors(corsSpec -> {
+                    corsSpec.configurationSource(request -> {
+                        var corsConfiguration = new CorsConfiguration();
+                        corsConfiguration.addAllowedOrigin("http://localhost:9080");
+                        corsConfiguration.addAllowedMethod("*");
+                        corsConfiguration.addAllowedHeader("*");
+                        return corsConfiguration;
+                    });
+                })
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(withDefaults());
         return http.build();
     }
@@ -70,4 +79,5 @@ public class SpringSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
