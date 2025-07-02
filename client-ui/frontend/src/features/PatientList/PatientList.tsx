@@ -2,18 +2,22 @@ import {useEffect, useState} from "react";
 import Table from "react-bootstrap/Table";
 import DeleteButton from "../../shared/components/DeleteButton.tsx";
 import ModalConfirmation from "../../shared/components/ModalConfirmation";
-import {apiPatient} from "../../services/ApiPatient.tsx";
+import {deletePatient, getPatients} from "../../services/ApiPatient.tsx";
 import AddButton from "../../shared/components/AddButton.tsx";
 import type Patient from "../../domain/Patient.tsx";
 import WaitingButton from "../../shared/components/WaitingButton.tsx";
+import AlertMessage from "../../shared/components/AlertMessage.tsx";
 
 
 function PatientList() {
 
     const [patients, setPatients] = useState<Patient[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const [error, setError] = useState<string | null>(null);
+    const [alertDelete, setalertDelete] = useState<{ message: string; isError: boolean } | null>(null);
+    const [alertPatientListError, setalertPatientListError] = useState<boolean>(false);
+
+
     const [showModal, setShowModal] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
 
@@ -27,8 +31,21 @@ function PatientList() {
         setSelectedPatientId(null);
     };
 
-    const handleModalDelete = () => {
+    const handleModalDelete = async () => {
         console.log("handleModalDeleteButton called with id: " + selectedPatientId);
+        try {
+            if (selectedPatientId !== null) {
+                // Appel à l'API pour supprimer le patient
+                await deletePatient(selectedPatientId);
+                // Recharger la liste des patients après suppression
+                const res = await getPatients();
+                setPatients(res.data);
+                setalertDelete({message: "La patient a été supprimé", isError: false});
+            }
+        } catch (e) {
+            console.log(e instanceof Error ? e.message : "Erreur inconnue")
+            setalertDelete({message: "Une erreur est survenue lors de la suppression du patient", isError: true});
+        }
         setShowModal(false);
         setSelectedPatientId(null);
     };
@@ -36,29 +53,19 @@ function PatientList() {
     useEffect(() => {
         const fetchPatientsFunction = async () => {
             try {
-                await apiPatient
-                    .get("/patients")
-                    .then((res) => {
-                        setPatients(res.data);
-                    });
-                setLoading(true);
-            } catch (e) {
-                setError(e instanceof Error ? e.message : "Erreur inconnue");
+                const res = await getPatients();
+                setPatients(res.data);
+            } catch (e: unknown) {
+                setalertPatientListError(true);
+                console.log(e instanceof Error ? e.message : "Erreur inconnue");
             }
+            setLoading(false);
         };
         fetchPatientsFunction().then(() => {
         });
     }, []);
 
-
-    if (error !== null) {
-        return (
-            <h1>
-                Erreur lors du chargement des patients : {error}
-            </h1>
-        );
-    }
-    if (!loading) {
+    if (loading) {
         return (
             <h1>
                 <WaitingButton/>
@@ -68,6 +75,18 @@ function PatientList() {
 
     return (
         <div>
+            {alertPatientListError && (
+                <AlertMessage
+                    alertColor="danger"
+                    message="Une erreur est survenue lors du chargement de la liste des patients. Veuillez réessayer plus tard."
+                />
+            )}
+            {alertDelete !== null && (
+                <AlertMessage
+                    alertColor={alertDelete.isError ? "danger" : "success"}
+                    message={alertDelete.message}
+                />
+            )}
             <h1>Liste des patients</h1>
             <Table striped bordered hover>
                 <thead>
@@ -127,89 +146,6 @@ function PatientList() {
             />
         </div>
     );
-
-    // useEffect(() => {
-    //     apiPatient
-    //         .get("/patients")
-    //         .then((response) => {
-    //             setPatients(response.data);
-    //         })
-    //         .catch((err) => {
-    //             setError(err.message);
-    //         });
-    // }, []);
-    //
-    //
-    // if (error !== null) {
-    //     return (
-    //         <h1>
-    //             Erreur lors du chargement des patients : {error}
-    //         </h1>
-    //     );
-    // }
-    //
-    //
-    // return (
-    //     <div>
-    //         <h1>Liste des patients</h1>
-    //         <Table striped bordered hover>
-    //             <thead>
-    //             <tr>
-    //                 <th>#</th>
-    //                 <th>Prénom</th>
-    //                 <th>Nom</th>
-    //                 <th>Sexe</th>
-    //                 <th>Date de naissance</th>
-    //                 <th>Adresse</th>
-    //                 <th>Téléphone</th>
-    //                 <th></th>
-    //             </tr>
-    //             </thead>
-    //             <tbody>
-    //             {patients.map(patient => (
-    //                 <tr key={patient.patientId}>
-    //                     <td>{patient.patientId}</td>
-    //                     <td>{patient.firstName}</td>
-    //                     <td>{patient.lastName}</td>
-    //                     <td>{patient.gender}</td>
-    //                     <td>{patient.birthDate}</td>
-    //                     <td>{patient.address}</td>
-    //                     <td>{patient.phoneNumber}</td>
-    //                     <td><DeleteButton onClick={() => handleTableDeleteButton(patient.patientId)}/>
-    //                     </td>
-    //                 </tr>
-    //             ))}
-    //             </tbody>
-    //             <tfoot>
-    //             <tr>
-    //                 <td colSpan={8}><AddButton showText={true} onClick={() => console.log("Création Patient")}/></td>
-    //             </tr>
-    //
-    //             </tfoot>
-    //         </Table>
-    //         <ModalConfirmation
-    //             show={showModal}
-    //             onHide={handleModalCancel}
-    //             onConfirm={handleModalDelete}
-    //             modalColor={"danger"}
-    //             title="Confirmation"
-    //             body={
-    //                 <>
-    //                     Êtes-vous sûr de vouloir supprimer <br/> le patient :
-    //                     <strong className={"p-1"}>
-    //                         {patients.find(p => p.patientId === selectedPatientId)?.firstName ?? ""}
-    //                         {patients.find(p => p.patientId === selectedPatientId)?.lastName ?? ""}
-    //                     </strong>
-    //                     ?
-    //                 </>
-    //             }
-    //             confirmButtonText="Supprimer"
-    //             confirmButtonVariant="danger"
-    //             cancelButtonText="Annuler"
-    //             cancelButtonVariant="secondary"
-    //         />
-    //     </div>
-    // );
 }
 
 export default PatientList;
