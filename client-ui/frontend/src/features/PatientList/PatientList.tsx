@@ -7,6 +7,7 @@ import AddButton from "../../shared/components/AddButton.tsx";
 import type Patient from "../../domain/Patient.tsx";
 import WaitingButton from "../../shared/components/WaitingButton.tsx";
 import AlertMessage from "../../shared/components/AlertMessage.tsx";
+import {useNavigate} from "react-router";
 
 
 function PatientList() {
@@ -65,6 +66,8 @@ function PatientList() {
         });
     }, []);
 
+    const navigate = useNavigate();
+
     if (loading) {
         return (
             <h1>
@@ -118,7 +121,9 @@ function PatientList() {
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colSpan={8}><AddButton showText={true} onClick={() => console.log("Création Patient")}/></td>
+                    <td colSpan={8}>
+                        <AddButton showText={true} onClick={() => navigate("/patients/create")}/>
+                    </td>
                 </tr>
 
                 </tfoot>
