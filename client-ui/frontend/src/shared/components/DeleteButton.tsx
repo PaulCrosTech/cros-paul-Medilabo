@@ -7,13 +7,14 @@ type ButtonDeleteProps = {
     showText?: boolean;
 }
 
-const DeleteButton: React.FC<ButtonDeleteProps> = ({onClick, showText}) => {
-    if (!showText) {
-        showText = false;
-    }
+const DeleteButton: React.FC<ButtonDeleteProps> = ({onClick, showText = false}) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        onClick();
+    };
     return (
         <button
-            onClick={onClick}
+            onClick={handleClick}
             className="btn btn-danger">
             <FontAwesomeIcon icon={faTrash}/>
             {showText && <span className="ms-1"> Supprimer</span>}

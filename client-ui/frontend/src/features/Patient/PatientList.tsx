@@ -27,6 +27,10 @@ function PatientList() {
         setShowModal(true);
     };
 
+    const handleRowClick = (patientId: number) => {
+        navigate(`/patients/${patientId}`);
+    };
+
     const handleModalCancel = () => {
         setShowModal(false);
         setSelectedPatientId(null);
@@ -50,6 +54,7 @@ function PatientList() {
         setShowModal(false);
         setSelectedPatientId(null);
     };
+
 
     useEffect(() => {
         const fetchPatientsFunction = async () => {
@@ -106,7 +111,8 @@ function PatientList() {
                 </thead>
                 <tbody>
                 {patients.map(patient => (
-                    <tr key={patient.patientId}>
+                    <tr key={patient.patientId} style={{cursor: 'pointer'}}
+                        onClick={() => handleRowClick(patient.patientId)}>
                         <td>{patient.patientId}</td>
                         <td>{patient.firstName}</td>
                         <td>{patient.lastName}</td>
@@ -121,7 +127,7 @@ function PatientList() {
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colSpan={8}>
+                    <td colSpan={8} className={"text-center"}>
                         <AddButton showText={true} onClick={() => navigate("/patients/create")}/>
                     </td>
                 </tr>

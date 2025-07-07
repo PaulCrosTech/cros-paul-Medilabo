@@ -1,4 +1,4 @@
-import PatientList from "../features/PatientList/PatientList.tsx";
+import PatientList from "../features/Patient/PatientList.tsx";
 
 
 function PatientListView() {
