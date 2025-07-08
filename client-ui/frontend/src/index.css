@@ -86,3 +86,7 @@
     padding: 0.1em 1em !important;
     transition: background 0.2s, color 0.2s;
 }
+
+label {
+    font-weight: bold;
+}

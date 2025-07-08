@@ -12,7 +12,7 @@ function AlertMessage(
         message = '',
     }: AlertMessageProps) {
     return (
-        <Alert variant={alertColor} dismissible>
+        <Alert variant={alertColor} dismissible className={"text-center"}>
             {message}
         </Alert>
     );

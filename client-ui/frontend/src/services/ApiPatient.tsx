@@ -10,5 +10,5 @@ const axiosInstance = axios.create({
 });
 
 export const getPatients = () => axiosInstance.get("/patients");
-
+export const getPatientById = (patientId: number) => axiosInstance.get(`/patients/${patientId}`);
 export const deletePatient = (patientId: number) => axiosInstance.delete(`/patients/${patientId}`);

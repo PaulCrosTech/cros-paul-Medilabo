@@ -5,7 +5,7 @@ import ModalConfirmation from "../../shared/components/ModalConfirmation";
 import {deletePatient, getPatients} from "../../services/ApiPatient.tsx";
 import AddButton from "../../shared/components/AddButton.tsx";
 import type Patient from "../../domain/Patient.tsx";
-import WaitingButton from "../../shared/components/WaitingButton.tsx";
+import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
 import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {useNavigate} from "react-router";
 
@@ -15,8 +15,8 @@ function PatientList() {
     const [patients, setPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const [alertDelete, setalertDelete] = useState<{ message: string; isError: boolean } | null>(null);
-    const [alertPatientListError, setalertPatientListError] = useState<boolean>(false);
+    const [alertDelete, setAlertDelete] = useState<{ message: string; isError: boolean } | null>(null);
+    const [alertPatientListError, setAlertPatientListError] = useState<boolean>(false);
 
 
     const [showModal, setShowModal] = useState(false);
@@ -45,11 +45,11 @@ function PatientList() {
                 // Recharger la liste des patients après suppression
                 const res = await getPatients();
                 setPatients(res.data);
-                setalertDelete({message: "La patient a été supprimé", isError: false});
+                setAlertDelete({message: "La patient a été supprimé", isError: false});
             }
         } catch (e) {
             console.log(e instanceof Error ? e.message : "Erreur inconnue")
-            setalertDelete({message: "Une erreur est survenue lors de la suppression du patient", isError: true});
+            setAlertDelete({message: "Une erreur est survenue lors de la suppression du patient", isError: true});
         }
         setShowModal(false);
         setSelectedPatientId(null);
@@ -57,17 +57,17 @@ function PatientList() {
 
 
     useEffect(() => {
-        const fetchPatientsFunction = async () => {
+        const fetchPatients = async () => {
             try {
                 const res = await getPatients();
                 setPatients(res.data);
             } catch (e: unknown) {
-                setalertPatientListError(true);
+                setAlertPatientListError(true);
                 console.log(e instanceof Error ? e.message : "Erreur inconnue");
             }
             setLoading(false);
         };
-        fetchPatientsFunction().then(() => {
+        fetchPatients().then(() => {
         });
     }, []);
 
@@ -75,9 +75,9 @@ function PatientList() {
 
     if (loading) {
         return (
-            <h1>
-                <WaitingButton/>
-            </h1>
+            <>
+                <WaitingAnimation/>
+            </>
         );
     }
 
