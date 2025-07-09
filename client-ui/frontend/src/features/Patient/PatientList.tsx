@@ -37,38 +37,36 @@ function PatientList() {
     };
 
     const handleModalDelete = async () => {
-        console.log("handleModalDeleteButton called with id: " + selectedPatientId);
-        try {
-            if (selectedPatientId !== null) {
-                // Appel à l'API pour supprimer le patient
-                await deletePatient(selectedPatientId);
-                // Recharger la liste des patients après suppression
-                const res = await getPatients();
-                setPatients(res.data);
-                setAlertDelete({message: "La patient a été supprimé", isError: false});
-            }
-        } catch (e) {
-            console.log(e instanceof Error ? e.message : "Erreur inconnue")
-            setAlertDelete({message: "Une erreur est survenue lors de la suppression du patient", isError: true});
+
+        if (selectedPatientId === null) {
+            return;
         }
-        setShowModal(false);
-        setSelectedPatientId(null);
+
+        deletePatient(selectedPatientId)
+            .then(() => {
+                getPatients()
+                    .then((res) => {
+                            setPatients(res.data);
+                            setAlertDelete({message: "La patient a été supprimé", isError: false});
+                        }
+                    )
+                    .catch(() => setAlertPatientListError(true));
+            })
+            .catch(() => setAlertDelete({
+                message: "Une erreur est survenue lors de la suppression du patient",
+                isError: true
+            }))
+            .finally(() => {
+                setShowModal(false);
+                setSelectedPatientId(null);
+            });
     };
 
-
     useEffect(() => {
-        const fetchPatients = async () => {
-            try {
-                const res = await getPatients();
-                setPatients(res.data);
-            } catch (e: unknown) {
-                setAlertPatientListError(true);
-                console.log(e instanceof Error ? e.message : "Erreur inconnue");
-            }
-            setLoading(false);
-        };
-        fetchPatients().then(() => {
-        });
+        getPatients()
+            .then((response) => setPatients(response.data))
+            .catch(() => setAlertPatientListError(true))
+            .finally(() => setLoading(false));
     }, []);
 
     const navigate = useNavigate();
@@ -80,15 +78,22 @@ function PatientList() {
             </>
         );
     }
+    if (alertPatientListError) {
+        return (
+            <AlertMessage
+                alertColor="danger"
+                message={
+                    <>
+                        Une erreur est survenue lors du chargement de la liste des patients.
+                        <br/>Veuillez réessayer plus tard.
+                    </>
+                }
+            />
+        )
+    }
 
     return (
         <div>
-            {alertPatientListError && (
-                <AlertMessage
-                    alertColor="danger"
-                    message="Une erreur est survenue lors du chargement de la liste des patients. Veuillez réessayer plus tard."
-                />
-            )}
             {alertDelete !== null && (
                 <AlertMessage
                     alertColor={alertDelete.isError ? "danger" : "success"}
