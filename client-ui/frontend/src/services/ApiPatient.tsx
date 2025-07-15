@@ -16,3 +16,6 @@ export const deletePatient = (patientId: number) => axiosInstance.delete(`/patie
 export const updatePatient = (patient: Patient) => {
     return axiosInstance.put(`/patients/${patient.patientId}`, patient);
 }
+export const createPatient = (patient: Patient) => {
+    return axiosInstance.post("/patients", patient);
+}

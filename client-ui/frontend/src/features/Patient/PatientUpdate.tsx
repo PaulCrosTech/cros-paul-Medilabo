@@ -31,7 +31,6 @@ function PatientUpdate() {
             setFormValidation(true);
             return;
         }
-        setFormValidation(true);
 
         const p: Patient = new Patient(
             id,
@@ -80,7 +79,8 @@ function PatientUpdate() {
                 <WaitingAnimation/>
             </>
         );
-    } else if (alertPatientListError || patient === undefined) {
+    }
+    if (alertPatientListError || patient === undefined) {
         return (
             <AlertMessage
                 alertColor="danger"
@@ -156,16 +156,17 @@ function PatientUpdate() {
                             name="birthDate"
                             defaultValue={patient.birthDate}
                             placeholder="Date de naissance"
+                            max={new Date().toISOString().split("T")[0]}
                             required
                         />
+                        <Form.Control.Feedback type="invalid">
+                            La date de naissance est requise, et doit être dans le passé.
+                        </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Control.Feedback type="invalid">
-                        La date de naissance est requise.
-                    </Form.Control.Feedback>
 
                     <Form.Group as={Col} className="mb-3" controlId="formGender">
                         <Form.Label>Genre</Form.Label>
-                        <Form.Select name="gender" defaultValue={patient.gender}>cd cli
+                        <Form.Select name="gender" defaultValue={patient.gender}>
                             <option value="M">Masculin</option>
                             <option value="F">Féminin</option>
                         </Form.Select>

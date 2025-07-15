@@ -7,17 +7,21 @@ import AddButton from "../../shared/components/AddButton.tsx";
 import type Patient from "../../domain/Patient.tsx";
 import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
 import AlertMessage from "../../shared/components/AlertMessage.tsx";
-import {useNavigate} from "react-router";
+import {useNavigate, useLocation} from "react-router";
 
 
 function PatientList() {
 
+
+    const [alertCreate, setAlertCreate] = useState<string | null>(null);
+    const {state} = useLocation();
+
+    const navigate = useNavigate();
     const [patients, setPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [alertDelete, setAlertDelete] = useState<{ message: string; isError: boolean } | null>(null);
     const [alertPatientListError, setAlertPatientListError] = useState<boolean>(false);
-
 
     const [showModal, setShowModal] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
@@ -59,6 +63,7 @@ function PatientList() {
             .finally(() => {
                 setShowModal(false);
                 setSelectedPatientId(null);
+                setAlertCreate(null);
             });
     };
 
@@ -66,10 +71,12 @@ function PatientList() {
         getPatients()
             .then((response) => setPatients(response.data))
             .catch(() => setAlertPatientListError(true))
-            .finally(() => setLoading(false));
-    }, []);
+            .finally(() => {
+                setLoading(false);
+                setAlertCreate(state?.alertCreate ?? null);
+            });
+    }, [state]);
 
-    const navigate = useNavigate();
 
     if (loading) {
         return (
@@ -100,7 +107,13 @@ function PatientList() {
                     message={alertDelete.message}
                 />
             )}
-            <h1>Liste des patients</h1>
+            {alertCreate !== null && (
+                <AlertMessage
+                    alertColor="success"
+                    message={alertCreate}
+                />
+            )}
+            <h1 className={"text-center"}>Liste des patients</h1>
             <Table striped bordered hover>
                 <thead>
                 <tr>
