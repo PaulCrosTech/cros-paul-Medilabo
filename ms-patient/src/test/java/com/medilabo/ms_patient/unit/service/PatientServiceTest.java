@@ -15,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -42,8 +41,8 @@ public class PatientServiceTest {
         patientService = new PatientService(patientRepository, patientMapper);
 
         patients = List.of(
-                new Patient(1, "John", "Doe", "2023-01-01", "M", "123 Main St", "123-123-1234"),
-                new Patient(2, "Emilia", "Apple", "1990-12-31", "F", "333 Par. St", "222-333-4444")
+                new Patient(1, "John", "Doe", "2023-01-01", "M", "123 Main St", "123-123-1234", false),
+                new Patient(2, "Emilia", "Apple", "1990-12-31", "F", "333 Par. St", "222-333-4444", false)
         );
     }
 
@@ -56,8 +55,7 @@ public class PatientServiceTest {
     @Test
     public void givenPatients_whenFindAll_thenReturnList() {
         // Given
-        when(patientRepository.findAll()).thenReturn(patients);
-
+        when(patientRepository.findByDeletedFalse()).thenReturn(patients);
 
         // When
         List<Patient> actualPatients = patientService.findAll();
@@ -76,7 +74,7 @@ public class PatientServiceTest {
     public void givenPatientId_whenFindById_thenReturnPatient() {
         // Given
         Patient patient = patients.getFirst();
-        when(patientRepository.findById(1)).thenReturn(Optional.of(patient));
+        when(patientRepository.findByPatientIdAndDeletedFalse(1)).thenReturn(Optional.of(patient));
 
         // When
         Patient actualPatient = patientService.findById(1);
@@ -95,7 +93,7 @@ public class PatientServiceTest {
     @Test
     public void givenNonExistentPatientId_whenFindById_thenThrowException() {
         // Given
-        when(patientRepository.findById(999)).thenReturn(Optional.empty());
+        when(patientRepository.findByPatientIdAndDeletedFalse(999)).thenReturn(Optional.empty());
 
         // When & Then
         assertThrows(
@@ -120,7 +118,8 @@ public class PatientServiceTest {
         patientService.deleteById(patientId);
 
         // Then
-        verify(patientRepository, times(1)).deleteById(patientId);
+        assertTrue(patients.getFirst().isDeleted());
+        verify(patientRepository, times(1)).save(any(Patient.class));
     }
 
     /**

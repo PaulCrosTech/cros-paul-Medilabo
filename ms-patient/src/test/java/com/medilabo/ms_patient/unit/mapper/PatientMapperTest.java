@@ -31,7 +31,7 @@ public class PatientMapperTest {
 
         patientMapper = Mappers.getMapper(PatientMapper.class);
 
-        patient = new Patient(1, "John", "Doe", "2023-01-01", "M", "123 Main St", "123-123-1234");
+        patient = new Patient(1, "John", "Doe", "2023-01-01", "M", "123 Main St", "123-123-1234", false);
         patientDto = new PatientDto("John", "Doe", "2023-01-01", "M", "123 Main St", "123-123-1234");
     }
 
