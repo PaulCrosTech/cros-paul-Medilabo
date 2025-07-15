@@ -1,12 +1,11 @@
 package com.medilabo.ms_patient.entity;
 
-import com.medilabo.ms_patient.utils.Gender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
 /**
  * Entity of the Patient
@@ -34,11 +33,15 @@ public class Patient {
 
     @Column(nullable = false, columnDefinition = "ENUM('M', 'F')")
     private String gender;
-    
+
     @Column(length = 100)
     private String address;
 
     @Column(name = "phone_number", length = 12)
     private String phoneNumber;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @JsonIgnore
+    private boolean deleted;
 
 }

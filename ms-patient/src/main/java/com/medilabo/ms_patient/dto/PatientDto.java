@@ -31,7 +31,6 @@ public class PatientDto {
     @ValidBirthDate
     private String birthDate;
 
-
     @NotNull(message = "Gender is mandatory.")
     @ValidGender
     private String gender;

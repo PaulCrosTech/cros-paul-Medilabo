@@ -31,18 +31,18 @@ public class PatientService implements IPatientService {
     }
 
     /**
-     * Finds all patients in the repository.
+     * Finds all patients in the repository (only returns non-deleted patients).
      *
      * @return a list of all patients
      */
 
     @Override
     public List<Patient> findAll() {
-        return patientRepository.findAll();
+        return patientRepository.findByDeletedFalse();
     }
 
     /**
-     * Finds a patient by ID.
+     * Finds a patient by ID (only returns non-deleted patients).
      *
      * @param id the ID of the patient to find
      * @return the patient with the specified ID
@@ -50,22 +50,22 @@ public class PatientService implements IPatientService {
      */
     @Override
     public Patient findById(Integer id) throws PatientNotFoundException {
-        return patientRepository.findById(id)
+        return patientRepository.findByPatientIdAndDeletedFalse(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
     }
 
     /**
-     * Deletes a patient by ID.
+     * Delete a patient by ID (Patient is marked as deleted).
      *
      * @param id the ID of the patient to delete
      * @throws PatientNotFoundException if no patient with the specified ID is found
      */
     @Override
     public void deleteById(Integer id) throws PatientNotFoundException {
-        // TODO : delete datas in MongoDB to avoid orphan data
         patientRepository.findById(id).ifPresentOrElse(
                 patient -> {
-                    patientRepository.deleteById(id);
+                    patient.setDeleted(true);
+                    patientRepository.save(patient);
                 },
                 () -> {
                     throw new PatientNotFoundException(id);

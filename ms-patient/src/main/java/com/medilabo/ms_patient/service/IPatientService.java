@@ -13,14 +13,14 @@ public interface IPatientService {
 
 
     /**
-     * Find all patients.
+     * Find all patients (only returns non-deleted patients).
      *
      * @return a list of all patients
      */
     List<Patient> findAll();
 
     /**
-     * Find a patient by ID.
+     * Find a patient by ID (only returns non-deleted patients).
      *
      * @param id the ID of the patient to find
      * @return the patient with the specified ID
@@ -30,7 +30,7 @@ public interface IPatientService {
 
 
     /**
-     * Delete a patient by ID.
+     * Delete a patient by ID (Patient is marked as deleted).
      *
      * @param id the ID of the patient to delete
      * @throws PatientNotFoundException if no patient with the specified ID is found

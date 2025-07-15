@@ -54,7 +54,7 @@ public class PatientServiceTest {
      * Then: Return list of patients
      */
     @Test
-    public void giventPatients_whenFindAll_thenReturnList() {
+    public void givenPatients_whenFindAll_thenReturnList() {
         // Given
         when(patientRepository.findAll()).thenReturn(patients);
 

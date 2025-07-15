@@ -18,6 +18,7 @@ public interface PatientMapper {
      * @return the converted Patient entity
      */
     @Mapping(target = "patientId", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Patient toPatient(PatientDto patientDto);
 
     /**
