@@ -1,6 +1,7 @@
 package com.medilabo.ms_note.service;
 
-import com.medilabo.ms_note.dto.NoteDto;
+import com.medilabo.ms_note.entity.Note;
+import com.medilabo.ms_note.exception.NoteNotFoundException;
 
 import java.util.List;
 
@@ -13,7 +14,14 @@ public interface INoteService {
      * Find notes by patient ID.
      *
      * @param patientId the ID of the patient
-     * @return a list of NoteDto
+     * @return a list of Note
      */
-    List<NoteDto> findByPatientId(Integer patientId);
+    List<Note> findByPatientId(Integer patientId);
+
+    /**
+     * Delete a note by ID.
+     *
+     * @param id the ID of the note to delete
+     */
+    void deleteById(String id) throws NoteNotFoundException;
 }

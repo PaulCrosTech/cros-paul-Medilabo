@@ -1,4 +1,4 @@
-package com.medilabo.ms_patient.utils;
+package com.medilabo.ms_note.utils;
 
 import lombok.Data;
 

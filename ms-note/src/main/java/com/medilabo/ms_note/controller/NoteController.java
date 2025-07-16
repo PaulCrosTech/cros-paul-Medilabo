@@ -1,12 +1,9 @@
 package com.medilabo.ms_note.controller;
 
-import com.medilabo.ms_note.dto.NoteDto;
+import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.service.INoteService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,10 +33,21 @@ public class NoteController {
      * @param patientId the ID of the patient
      * @return a list of NoteDto
      */
-    @GetMapping(path = "/{patientId}", headers = "X-API-VERSION=1")
-    public List<NoteDto> getNotesByPatientId(@PathVariable Integer patientId) {
-        log.info("====> GET /notes/{} <====", patientId);
+    @GetMapping(path = "/patient/{patientId}", headers = "X-API-VERSION=1")
+    public List<Note> getNotesByPatientId(@PathVariable Integer patientId) {
+        log.info("====> GET /notes/patient/{} <====", patientId);
         return noteService.findByPatientId(patientId);
+    }
+
+    /**
+     * Deletes a note by its ID.
+     *
+     * @param id the ID of the note to delete
+     */
+    @DeleteMapping(path = "/{id}", headers = "X-API-VERSION=1")
+    public void deleteNoteById(@PathVariable String id) {
+        log.info("====> DELETE /notes/{} <====", id);
+        noteService.deleteById(id);
     }
 
 }
