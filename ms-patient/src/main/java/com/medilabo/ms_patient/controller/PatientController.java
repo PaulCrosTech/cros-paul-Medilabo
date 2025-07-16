@@ -38,7 +38,7 @@ public class PatientController {
      */
     @GetMapping(headers = "X-API-VERSION=1")
     public List<Patient> getPatients() {
-        log.info("====> GET /patients : page <====");
+        log.info("====> GET /patients <====");
         return patientService.findAll();
     }
 
