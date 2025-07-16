@@ -20,8 +20,12 @@ public class CustomRouteLocator {
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("patient_route", r -> r.path("/patients/**")
-                        .uri("lb://ms-patient/"))
+                .route("patient_route",
+                        r -> r.path("/patients/**").uri("lb://ms-patient/")
+                )
+                .route("note_route",
+                        r -> r.path("/notes/**").uri("lb://ms-note/")
+                )
                 .build();
     }
 
