@@ -25,10 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Unit test class for the PatientController class.
- * Without security configuration
  */
 @WebMvcTest(controllers = PatientController.class)
-@AutoConfigureMockMvc(addFilters = false)
 public class PatientControllerTest {
 
     @Autowired
@@ -45,7 +43,6 @@ public class PatientControllerTest {
      *
      * @throws Exception if an error occurs during the request
      */
-
     @Test
     public void givenEmptyList_whenGetPatients_thenReturnOk() throws Exception {
 

@@ -1,6 +1,5 @@
 package com.medilabo.ms_note.service.impl;
 
-import com.medilabo.ms_note.beans.PatientBean;
 import com.medilabo.ms_note.dto.NoteCreateDto;
 import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.exception.NoteNotFoundException;
