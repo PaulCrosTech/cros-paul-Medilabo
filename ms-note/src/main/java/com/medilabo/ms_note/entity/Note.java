@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 /**
  * Entity class representing a Note in the MongoDB database.
  * This class is used to store notes related to patients.
@@ -24,5 +26,7 @@ public class Note {
     private String lastName;
 
     private String note;
+
+    private Date createdAt = new Date();
 
 }

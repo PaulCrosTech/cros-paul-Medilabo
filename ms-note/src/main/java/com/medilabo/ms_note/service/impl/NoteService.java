@@ -45,8 +45,8 @@ public class NoteService implements INoteService {
      * @return a list of NoteDto
      */
     @Override
-    public List<Note> findByPatientId(Integer patientId) {
-        return noteRepository.findByPatientId(patientId);
+    public List<Note> findByPatientIdOrderByCreatedAt(Integer patientId) {
+        return noteRepository.findByPatientIdOrderByCreatedAtDesc(patientId);
     }
 
     /**

@@ -13,11 +13,10 @@ import java.util.List;
 public interface NoteRepository extends MongoRepository<Note, String> {
 
     /**
-     * Find notes by patient ID.
+     * Find notes by patient ID, ordered by creation date.
      *
      * @param patientId the ID of the patient
      * @return a list of Note entities
      */
-    List<Note> findByPatientId(Integer patientId);
-
+    List<Note> findByPatientIdOrderByCreatedAtDesc(Integer patientId);
 }

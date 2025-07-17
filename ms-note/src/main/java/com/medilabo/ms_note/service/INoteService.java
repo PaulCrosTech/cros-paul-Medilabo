@@ -18,7 +18,7 @@ public interface INoteService {
      * @param patientId the ID of the patient
      * @return a list of Note
      */
-    List<Note> findByPatientId(Integer patientId);
+    List<Note> findByPatientIdOrderByCreatedAt(Integer patientId);
 
     /**
      * Delete a note by ID.

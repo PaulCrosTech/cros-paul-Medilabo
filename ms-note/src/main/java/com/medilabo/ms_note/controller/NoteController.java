@@ -32,15 +32,15 @@ public class NoteController {
     }
 
     /**
-     * Retrieves a list of notes by patient ID.
+     * Retrieves a list of notes by patient ID order by creation date.
      *
      * @param patientId the ID of the patient
      * @return a list of NoteDto
      */
     @GetMapping(path = "/patient/{patientId}", headers = "X-API-VERSION=1")
-    public List<Note> getNotesByPatientId(@PathVariable Integer patientId) {
+    public List<Note> getNotesByPatientIdOrderByCreatedAt(@PathVariable Integer patientId) {
         log.info("====> GET /notes/patient/{} <====", patientId);
-        return noteService.findByPatientId(patientId);
+        return noteService.findByPatientIdOrderByCreatedAt(patientId);
     }
 
     /**
