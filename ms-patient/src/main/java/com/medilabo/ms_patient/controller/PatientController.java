@@ -55,6 +55,18 @@ public class PatientController {
     }
 
     /**
+     * Retrieves the last name of a patient by their ID.
+     *
+     * @param id the ID of the patient
+     * @return the last name of the patient with the specified ID
+     */
+    @GetMapping(path = "/{id}/lastname", headers = "X-API-VERSION=1")
+    public String getPatientLastNameById(@PathVariable int id) {
+        log.info("====> GET /patients/{}/lastname <====", id);
+        return patientService.findLastNameById(id);
+    }
+
+    /**
      * Deletes a patient by their ID.
      *
      * @param id the ID of the patient to delete

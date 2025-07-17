@@ -6,6 +6,7 @@ import com.medilabo.ms_patient.exceptions.PatientNotFoundException;
 import com.medilabo.ms_patient.mapper.PatientMapper;
 import com.medilabo.ms_patient.repository.PatientRepository;
 import com.medilabo.ms_patient.service.IPatientService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * The PatientService class implements the IPatientService interface
  * and provides methods for managing patients.
  */
+@Slf4j
 @Service
 public class PatientService implements IPatientService {
 
@@ -51,6 +53,21 @@ public class PatientService implements IPatientService {
     @Override
     public Patient findById(Integer id) throws PatientNotFoundException {
         return patientRepository.findByPatientIdAndDeletedFalse(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+    }
+
+    /**
+     * Find a patient by ID and return only the last name (only returns non-deleted patients).
+     *
+     * @param id the ID of the patient to find
+     * @return the last name of the patient with the specified ID
+     * @throws PatientNotFoundException if no patient with the specified ID is found
+     */
+    @Override
+    public String findLastNameById(Integer id) throws PatientNotFoundException {
+        log.info("====> findLastNameById  {} <====", id);
+        log.info(" ====> findLastNameById  patientRepository {} <====", patientRepository.findLastNameByPatientIdAndDeletedFalse(id));
+        return patientRepository.findLastNameByPatientIdAndDeletedFalse(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
     }
 

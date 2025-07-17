@@ -28,6 +28,15 @@ public interface IPatientService {
      */
     Patient findById(Integer id) throws PatientNotFoundException;
 
+    /**
+     * Find a patient by ID and return only the last name (only returns non-deleted patients).
+     *
+     * @param id the ID of the patient to find
+     * @return the last name of the patient with the specified ID
+     * @throws PatientNotFoundException if no patient with the specified ID is found
+     */
+    String findLastNameById(Integer id) throws PatientNotFoundException;
+
 
     /**
      * Delete a patient by ID (Patient is marked as deleted).
