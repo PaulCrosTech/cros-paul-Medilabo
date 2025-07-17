@@ -5,6 +5,7 @@ import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.exception.PatientNotFoundException;
 import com.medilabo.ms_note.service.INoteService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +66,20 @@ public class NoteController {
     public Note createNote(@RequestBody @Valid NoteCreateDto noteCreateDto) throws PatientNotFoundException {
         log.info("====> POST /notes <====");
         return noteService.create(noteCreateDto);
+    }
+
+    /**
+     * Updates an existing note by its ID.
+     *
+     * @param id   the ID of the note to update
+     * @param note the updated note content
+     * @return the updated Note entity
+     * @throws PatientNotFoundException if no patient with the specified ID is found
+     */
+    @PutMapping(path = "/{id}", headers = "X-API-VERSION=1")
+    public Note updateNote(@PathVariable String id, @RequestBody @Valid @NotBlank String note) throws PatientNotFoundException {
+        log.info("====> PUT /notes/{} <====", id);
+        return noteService.update(id, note);
     }
 
 }

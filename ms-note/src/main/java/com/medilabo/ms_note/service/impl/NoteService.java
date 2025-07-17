@@ -9,7 +9,6 @@ import com.medilabo.ms_note.mapper.NoteMapper;
 import com.medilabo.ms_note.proxies.MsPatientProxy;
 import com.medilabo.ms_note.repository.NoteRepository;
 import com.medilabo.ms_note.service.INoteService;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -75,13 +74,28 @@ public class NoteService implements INoteService {
     public Note create(NoteCreateDto noteCreateDto) throws PatientNotFoundException {
 
         String patientBean = msPatientProxy.getPatientLastNameById(noteCreateDto.getPatientId());
-        log.info("====> patientBean {} <====", patientBean);
 
         Note note = noteMapper.NoteCreateDtoToNote(noteCreateDto);
         note.setLastName(patientBean);
-        log.info("====> Note created {} <====", note);
         return noteRepository.save(note);
 
+    }
+
+    /**
+     * Update an existing note.
+     *
+     * @param id   the ID of the note to update
+     * @param note the updated note content
+     * @return the updated Note entity
+     * @throws NoteNotFoundException if no note with the specified ID is found
+     */
+    @Override
+    public Note update(String id, String note) throws NoteNotFoundException {
+        Note existingNote = noteRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+
+        existingNote.setNote(note);
+        return noteRepository.save(existingNote);
     }
 
 }
