@@ -224,4 +224,42 @@ public class PatientServiceTest {
                 () -> patientService.update(patientId, patientDto)
         );
     }
+
+
+    /**
+     * Test method: findLastNameById
+     * Given: a patient with ID 1
+     * When: findLastNameById
+     * Then: Return patient's last name
+     */
+    @Test
+    public void givenPatientId_whenFindLastNameById_thenReturnPatient() {
+        // Given
+        Patient patient = patients.getFirst();
+        when(patientRepository.findLastNameByPatientIdAndDeletedFalse(patient.getPatientId())).thenReturn(Optional.of(patient.getLastName()));
+
+        // When
+        String actualLastName = patientService.findLastNameById(patient.getPatientId());
+
+        // Then
+        assertEquals(patient.getLastName(), actualLastName);
+    }
+
+    /**
+     * Test method: findLastNameById
+     * Given: a non-existent patient ID
+     * When: findLastNameById
+     * Then: Throw PatientNotFoundException
+     */
+    @Test
+    public void givenNonExistentPatientId_whenFindLastNameById_thenThrowException() {
+        // Given
+        when(patientRepository.findLastNameByPatientIdAndDeletedFalse(999)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(
+                PatientNotFoundException.class,
+                () -> patientService.findLastNameById(999)
+        );
+    }
 }

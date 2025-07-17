@@ -305,4 +305,48 @@ public class PatientControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+
+    /**
+     * Test method: getPatientLastNameById
+     * Given: an existing patient with ID 1
+     * When: GET /patients/1/lastname
+     * Then: Return status OK (200)
+     *
+     * @throws Exception if an error occurs during the request
+     */
+    @Test
+    public void givenExistingPatient_whenGetPatientLastNameById_thenReturnOk() throws Exception {
+
+        // Given
+        int patientId = 1;
+
+        when(patientService.findLastNameById(patientId)).thenReturn("Doe");
+
+        // When & Then
+        mockMvc.perform(get("/patients/" + patientId + "/lastname").header("X-API-VERSION", "1"))
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * Test method: getPatientLastNameById
+     * Given: a non-existing patient with ID 99
+     * When: GET /patients/99/lastname
+     * Then: Return status Not Found (404)
+     *
+     * @throws Exception if an error occurs during the request
+     */
+    @Test
+    public void givenNonExistingPatient_whenGetPatientLastNameById_thenReturnNotFound() throws Exception {
+
+        // Given
+        int patientId = 99;
+        doThrow(new PatientNotFoundException(patientId)).when(patientService).findLastNameById(patientId);
+
+        // When & Then
+        mockMvc.perform(get("/patients/" + patientId + "/lastname").header("X-API-VERSION", "1"))
+                .andExpect(status().isNotFound());
+
+    }
+
 }

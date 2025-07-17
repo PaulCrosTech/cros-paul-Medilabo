@@ -65,8 +65,6 @@ public class PatientService implements IPatientService {
      */
     @Override
     public String findLastNameById(Integer id) throws PatientNotFoundException {
-        log.info("====> findLastNameById  {} <====", id);
-        log.info(" ====> findLastNameById  patientRepository {} <====", patientRepository.findLastNameByPatientIdAndDeletedFalse(id));
         return patientRepository.findLastNameByPatientIdAndDeletedFalse(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
     }
