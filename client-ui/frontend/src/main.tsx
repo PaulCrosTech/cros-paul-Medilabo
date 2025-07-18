@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
                     <Route path="/" element={<HomeView/>}></Route>
                     <Route path="/patients" element={<PatientListView/>}></Route>
                     <Route path="/patients/create" element={<PatientCreateView/>}></Route>
-                    <Route path="/patients/:patientId" element={<PatientUpdateView/>}></Route>
+                    <Route path="/patients/:paramPatientId" element={<PatientUpdateView/>}></Route>
                     <Route path="*" element={<NotFoundView/>}></Route>
                 </Route>
             </Routes>

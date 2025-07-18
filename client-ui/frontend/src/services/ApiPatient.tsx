@@ -1,14 +1,5 @@
-import axios from "axios";
+import axiosInstance from "./Api.tsx";
 import type Patient from "../domain/Patient.tsx";
-
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:9001/',
-    headers: {
-        'Authorization': 'Basic ' + btoa('User@1' + ':' + 'Password@1'),
-        'Content-Type': 'application/json',
-        'X-API-VERSION': '1',
-    }
-});
 
 export const getPatients = () => axiosInstance.get("/patients");
 export const getPatientById = (patientId: number) => axiosInstance.get(`/patients/${patientId}`);

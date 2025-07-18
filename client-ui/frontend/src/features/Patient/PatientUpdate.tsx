@@ -2,7 +2,7 @@ import {useParams} from 'react-router';
 import React, {useEffect, useState} from "react";
 import {getPatientById, updatePatient} from "../../services/ApiPatient.tsx";
 import Patient from "../../domain/Patient.tsx";
-import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
+// import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
 import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {Form, Row, Col} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -10,8 +10,8 @@ import {faPen} from "@fortawesome/free-solid-svg-icons";
 import type {Gender} from "../../domain/Gender.tsx";
 
 function PatientUpdate() {
-    const {patientId} = useParams();
-    const id: number = Number(patientId);
+    const {paramPatientId} = useParams();
+    const patientId: number = Number(paramPatientId);
 
     const [patient, setPatient] = useState<Patient>();
     const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ function PatientUpdate() {
         }
 
         const p: Patient = new Patient(
-            id,
+            patientId,
             String(formData.get("address") ?? ""),
             String(formData.get("birthDate") ?? ""),
             String(formData.get("firstName") ?? ""),
@@ -61,7 +61,7 @@ function PatientUpdate() {
     }
 
     useEffect(() => {
-        getPatientById(id)
+        getPatientById(patientId)
             .then(function (response) {
                 setPatient(response.data);
             })
@@ -71,15 +71,18 @@ function PatientUpdate() {
             .finally(() =>
                 setLoading(false)
             )
-    }, [patientId, id]);
+    }, [paramPatientId, patientId]);
 
     if (loading) {
-        return (
-            <>
-                <WaitingAnimation/>
-            </>
-        );
+        return <></>;
     }
+    // if (loading) {
+    //     return (
+    //         <>
+    //             <WaitingAnimation/>
+    //         </>
+    //     );
+    // }
     if (alertPatientListError || patient === undefined) {
         return (
             <AlertMessage

@@ -8,7 +8,7 @@ import type Patient from "../../domain/Patient.tsx";
 import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
 import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {useNavigate, useLocation} from "react-router";
-
+import {faUserPlus} from '@fortawesome/free-solid-svg-icons'
 
 function PatientList() {
 
@@ -146,9 +146,10 @@ function PatientList() {
                 <tfoot>
                 <tr>
                     <td colSpan={8} className={"text-center"}>
-                        <AddButton showText={true} onClick={() => navigate("/patients/create")}/>
+                        <AddButton icon={faUserPlus} showText={true} onClick={() => navigate("/patients/create")}/>
                     </td>
                 </tr>
+
 
                 </tfoot>
             </Table>
