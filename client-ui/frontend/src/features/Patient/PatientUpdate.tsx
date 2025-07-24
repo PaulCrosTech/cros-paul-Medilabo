@@ -1,28 +1,32 @@
 import {useParams} from 'react-router';
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {getPatientById, updatePatient} from "../../services/ApiPatient.tsx";
 import Patient from "../../domain/Patient.tsx";
-// import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
-import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {Form, Row, Col} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPen} from "@fortawesome/free-solid-svg-icons";
 import type {Gender} from "../../domain/Gender.tsx";
+import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
+import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
+
 
 function PatientUpdate() {
+
     const {paramPatientId} = useParams();
     const patientId: number = Number(paramPatientId);
 
+    const {setGlobalAlert} = useContext(GlobalAlertContext);
+
     const [patient, setPatient] = useState<Patient>();
-    const [loading, setLoading] = useState(true);
-    const [alertPatientListError, setAlertPatientListError] = useState<boolean>(false);
-    const [alertUpdate, setAlertUpdate] = useState<{ message: React.ReactNode; isError: boolean } | null>(null);
+    const [loading, setLoading] = useState<'loading' | 'failed' | 'loaded'>('loading');
     const [formValidation, setFormValidation] = useState(false);
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 
         e.preventDefault();
-        setAlertUpdate(null);
+        setGlobalAlert({
+            show: false
+        });
         const form = e.currentTarget;
         const formData = new FormData(form);
 
@@ -44,67 +48,48 @@ function PatientUpdate() {
 
         updatePatient(p)
             .then(() => {
-                setAlertUpdate({message: "La patient a été mis à jour.", isError: false});
+                setGlobalAlert({
+                    message: "Le patient a été mis à jour.",
+                    variant: "success",
+                    show: true
+                });
             })
             .catch(() => {
-                setAlertUpdate({
-                    message: (
+                setGlobalAlert({
+                    message:
                         <>
                             Une erreur est survenue lors de la mise à jour du patient.<br/>
                             Veuillez réessayer plus tard.
                         </>
-                    ),
-                    isError: true
+                    ,
+                    variant: "danger",
+                    show: true
                 });
-
             })
     }
 
     useEffect(() => {
         getPatientById(patientId)
-            .then(function (response) {
+            .then((response) => {
                 setPatient(response.data);
+                setLoading('loaded');
             })
-            .catch(
-                () => setAlertPatientListError(true)
-            )
-            .finally(() =>
-                setLoading(false)
-            )
-    }, [paramPatientId, patientId]);
+            .catch(() => {
+                setLoading('failed');
+            });
+    }, [paramPatientId, patientId, setGlobalAlert]);
 
-    if (loading) {
-        return <></>;
-    }
-    // if (loading) {
-    //     return (
-    //         <>
-    //             <WaitingAnimation/>
-    //         </>
-    //     );
-    // }
-    if (alertPatientListError || patient === undefined) {
+
+    if (loading === 'loading' || loading === 'failed' || patient === undefined) {
         return (
-            <AlertMessage
-                alertColor="danger"
-                message={
-                    <>
-                        Une erreur est survenue lors du chargement de la fiche du patient.
-                        <br/>Veuillez réessayer plus tard.
-                    </>
-                }
-            />
+            <>
+                <LoadingComponent error={(loading === 'failed')}/>
+            </>
         );
     }
 
     return (
         <>
-            {alertUpdate !== null && (
-                <AlertMessage
-                    alertColor={alertUpdate.isError ? "danger" : "success"}
-                    message={alertUpdate.message}
-                />
-            )}
             <h1 className="text-center mb-5">Fiche patient</h1>
 
             <Form method={"post"} onSubmit={handleSubmit} noValidate validated={formValidation}>

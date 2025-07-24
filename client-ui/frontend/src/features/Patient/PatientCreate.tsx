@@ -1,21 +1,24 @@
 import {Col, Form, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons'
-import React, {useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Patient from "../../domain/Patient.tsx";
 import type {Gender} from "../../domain/Gender.tsx";
 import {createPatient} from "../../services/ApiPatient.tsx";
-import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {useNavigate} from "react-router";
+import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
 
 function PatientCreate() {
+
+    const {setGlobalAlert} = useContext(GlobalAlertContext);
+
     const [formValidation, setFormValidation] = useState(false);
-    const [alertCreateError, setAlertCreateError] = useState(false);
     const navigate = useNavigate();
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 
         e.preventDefault();
+        setGlobalAlert({show: false});
         const form = e.currentTarget;
         const formData = new FormData(form);
 
@@ -46,22 +49,21 @@ function PatientCreate() {
                 });
             })
             .catch(() => {
-                setAlertCreateError(true);
-            });
+                    setGlobalAlert({
+                        message: <>Une erreur est survenue lors de la création du patient.</>,
+                        variant: "danger",
+                        show: true
+                    });
+                }
+            )
     }
+
+    useEffect(() => {
+        setGlobalAlert({show: false});
+    }, [setGlobalAlert]);
 
     return (
         <>
-            {alertCreateError && (
-                <AlertMessage
-                    alertColor="danger"
-                    message={
-                        <>
-                            Une erreur est survenue lors de la création du patient.<br/>
-                            Veuillez réessayer plus tard.
-                        </>}
-                />
-            )}
             <h1 className="text-center mb-5">Fiche patient</h1>
 
             <Form method={"post"} onSubmit={handleSubmit} noValidate validated={formValidation}>

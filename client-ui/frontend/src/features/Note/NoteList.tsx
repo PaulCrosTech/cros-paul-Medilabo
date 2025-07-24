@@ -5,15 +5,17 @@ import {useParams} from 'react-router';
 import Note from "../../domain/Note.tsx";
 import {faNotesMedical} from "@fortawesome/free-solid-svg-icons";
 import ModalConfirmation from "../../shared/components/ModalConfirmation.tsx";
-import AlertMessage from "../../shared/components/AlertMessage.tsx";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
+import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
 
 function fetchNotes(
     patientId: number,
     setNotes: (notes: Note[]) => void,
-    setAlertNoteListError: (value: boolean) => void) {
+    setLoading: (status: 'loading' | 'failed' | 'loaded')
+        => void) {
 
     getByPatientId(patientId)
         .then((response) => {
@@ -21,20 +23,23 @@ function fetchNotes(
                 new Note(item.id, item.patientId, item.note, item.createdAt)
             );
             setNotes(formattedNotes);
+            setLoading('loaded');
         })
-        .catch(() => setAlertNoteListError(true))
+        .catch(
+            () => setLoading('failed')
+        )
 }
 
 
 function NoteList() {
+
     const {paramPatientId} = useParams();
     const patientId: number = Number(paramPatientId);
     const [notes, setNotes] = useState<Note[]>([]);
 
-    const [alertNoteListError, setAlertNoteListError] = useState<boolean>(false);
-    const [alertDelete, setAlertDelete] = useState<{ message: React.ReactNode; isError: boolean } | null>(null);
+    const {setGlobalAlert} = useContext(GlobalAlertContext);
+    const [loading, setLoading] = useState<'loading' | 'failed' | 'loaded'>('loading');
 
-    const [alertCreate, setAlertCreate] = useState<{ message: React.ReactNode; isError: boolean } | null>(null);
     const [formValidation, setFormValidation] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
@@ -54,22 +59,32 @@ function NoteList() {
         }
 
         deleteById(selectedNoteId)
-            .catch(() => setAlertDelete({
-                message: "Une erreur est survenue lors de la suppression de la note.",
-                isError: true
-            }))
+            .then(() => {
+                setGlobalAlert({
+                    message: <>La note a été supprimée.</>,
+                    variant: "success",
+                    show: true
+                });
+            })
+            .catch(() => {
+                    setGlobalAlert({
+                        message: <>Une erreur est survenue lors de la suppression de la note.</>,
+                        variant: "danger",
+                        show: true
+                    });
+                }
+            )
             .finally(() => {
-                fetchNotes(patientId, setNotes, setAlertNoteListError);
+                fetchNotes(patientId, setNotes, setLoading);
                 setShowModal(false);
                 setSelectedNoteId(null);
-                setAlertCreate(null);
             });
     };
 
     function handleTableAddButton(e: React.FormEvent<HTMLFormElement>) {
 
         e.preventDefault();
-        setAlertCreate(null);
+        setGlobalAlert({show: false});
         const form = e.currentTarget;
         const formData = new FormData(form);
 
@@ -81,57 +96,40 @@ function NoteList() {
 
         createNote(patientId, formData.get("noteContent") as string)
             .then(() => {
-                setAlertCreate({message: "La note a été enregistrée.", isError: false});
-                fetchNotes(patientId, setNotes, setAlertNoteListError);
+
+                setGlobalAlert({
+                    message: <>La note a été sauvegardée.</>,
+                    variant: "success",
+                    show: true
+                });
+                fetchNotes(patientId, setNotes, setLoading);
+                setFormValidation(false);
                 form.reset();
             })
             .catch(() => {
-                setAlertCreate({
-                    message: (
-                        <>
-                            Une erreur est survenue lors de la sauvegarder de la note.<br/>
-                            Veuillez réessayer plus tard.
-                        </>
-                    ),
-                    isError: true
+                setGlobalAlert({
+                    message: <>Une erreur est survenue lors de la sauvegarde de la note.</>,
+                    variant: "danger",
+                    show: true
                 });
-
             })
     }
 
 
     useEffect(() => {
-        fetchNotes(patientId, setNotes, setAlertNoteListError);
+        fetchNotes(patientId, setNotes, setLoading);
     }, [paramPatientId, patientId]);
 
-    if (alertNoteListError || notes === undefined) {
+    if (loading === 'loading' || loading === 'failed') {
         return (
-            <AlertMessage
-                alertColor="danger"
-                message={
-                    <>
-                        Une erreur est survenue lors du chargement des notes du patient.
-                        <br/>Veuillez réessayer plus tard.
-                    </>
-                }
-            />
+            <>
+                <LoadingComponent error={(loading === 'failed')}/>
+            </>
         );
     }
 
     return (
         <>
-            {alertDelete !== null && (
-                <AlertMessage
-                    alertColor={alertDelete.isError ? "danger" : "success"}
-                    message={alertDelete.message}
-                />
-            )}
-            {alertCreate !== null && (
-                <AlertMessage
-                    alertColor={alertCreate.isError ? "danger" : "success"}
-                    message={alertCreate.message}
-                />
-            )}
             <h1 className={"text-center"}>Notes</h1>
 
             <Table striped bordered hover>

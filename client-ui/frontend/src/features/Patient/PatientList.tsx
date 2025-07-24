@@ -1,38 +1,34 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Table from "react-bootstrap/Table";
 import DeleteButton from "../../shared/components/DeleteButton.tsx";
 import ModalConfirmation from "../../shared/components/ModalConfirmation";
 import {deletePatient, getPatients} from "../../services/ApiPatient.tsx";
 import AddButton from "../../shared/components/AddButton.tsx";
 import type Patient from "../../domain/Patient.tsx";
-import WaitingAnimation from "../../shared/components/WaitingAnimation.tsx";
-import AlertMessage from "../../shared/components/AlertMessage.tsx";
 import {useNavigate, useLocation} from "react-router";
 import {faUserPlus} from '@fortawesome/free-solid-svg-icons'
+import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
+import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
 
 function PatientList() {
 
-
-    const [alertCreate, setAlertCreate] = useState<string | null>(null);
     const {state} = useLocation();
-
+    const {setGlobalAlert} = useContext(GlobalAlertContext);
     const navigate = useNavigate();
-    const [patients, setPatients] = useState<Patient[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    const [alertDelete, setAlertDelete] = useState<{ message: string; isError: boolean } | null>(null);
-    const [alertPatientListError, setAlertPatientListError] = useState<boolean>(false);
+    const [patients, setPatients] = useState<Patient[]>([]);
+
+    const [loading, setLoading] = useState<'loading' | 'failed' | 'loaded'>('loading');
 
     const [showModal, setShowModal] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
 
+    const handleRowClick = (patientId: number) => {
+        navigate(`/patients/${patientId}`);
+    };
     const handleTableDeleteButton = (patientId: number) => {
         setSelectedPatientId(patientId);
         setShowModal(true);
-    };
-
-    const handleRowClick = (patientId: number) => {
-        navigate(`/patients/${patientId}`);
     };
 
     const handleModalCancel = () => {
@@ -51,68 +47,65 @@ function PatientList() {
                 getPatients()
                     .then((res) => {
                             setPatients(res.data);
-                            setAlertDelete({message: "La patient a été supprimé", isError: false});
+                            setGlobalAlert({
+                                message: <>Le patient a été supprimé.</>,
+                                variant: "success",
+                                show: true
+                            });
                         }
                     )
-                    .catch(() => setAlertPatientListError(true));
+                    .catch(() => {
+                        setLoading('failed');
+                    });
             })
-            .catch(() => setAlertDelete({
-                message: "Une erreur est survenue lors de la suppression du patient",
-                isError: true
-            }))
+            .catch(() => {
+                    setGlobalAlert({
+                        message: <>Une erreur est survenue lors de la suppression du patient.<br/>Veuillez réessayer plus
+                            tard.</>,
+                        variant: "danger",
+                        show: true
+                    });
+                }
+            )
             .finally(() => {
                 setShowModal(false);
                 setSelectedPatientId(null);
-                setAlertCreate(null);
+                setLoading('loaded');
             });
     };
 
     useEffect(() => {
         getPatients()
-            .then((response) => setPatients(response.data))
-            .catch(() => setAlertPatientListError(true))
+            .then(
+                (response) => {
+                    setPatients(response.data);
+                    setLoading('loaded');
+                }
+            )
+            .catch(() => {
+                setLoading('failed');
+            })
             .finally(() => {
-                setLoading(false);
-                setAlertCreate(state?.alertCreate ?? null);
+                if (state?.alertCreate) {
+                    setGlobalAlert({
+                        message: state.alertCreate,
+                        variant: "success",
+                        show: true
+                    });
+                }
             });
-    }, [state]);
+    }, [setGlobalAlert, state]);
 
-
-    if (loading) {
+    if (loading === 'loading' || loading === 'failed') {
         return (
             <>
-                <WaitingAnimation/>
+                <LoadingComponent error={(loading === 'failed')}/>
             </>
         );
-    }
-    if (alertPatientListError) {
-        return (
-            <AlertMessage
-                alertColor="danger"
-                message={
-                    <>
-                        Une erreur est survenue lors du chargement de la liste des patients.
-                        <br/>Veuillez réessayer plus tard.
-                    </>
-                }
-            />
-        )
     }
 
     return (
         <div>
-            {alertDelete !== null && (
-                <AlertMessage
-                    alertColor={alertDelete.isError ? "danger" : "success"}
-                    message={alertDelete.message}
-                />
-            )}
-            {alertCreate !== null && (
-                <AlertMessage
-                    alertColor="success"
-                    message={alertCreate}
-                />
-            )}
             <h1 className={"text-center"}>Liste des patients</h1>
             <Table striped bordered hover>
                 <thead>
@@ -149,8 +142,6 @@ function PatientList() {
                         <AddButton icon={faUserPlus} showText={true} onClick={() => navigate("/patients/create")}/>
                     </td>
                 </tr>
-
-
                 </tfoot>
             </Table>
             <ModalConfirmation
