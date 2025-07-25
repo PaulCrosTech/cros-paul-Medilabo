@@ -27,7 +27,7 @@ public class CustomRouteLocator {
                         r -> r.path("/notes/**").uri("lb://ms-note/")
                 )
                 .route("risk_route",
-                        r -> r.path("/risk/**").uri("lb://ms-riskassessment/")
+                        r -> r.path("/risks/**").uri("lb://ms-riskassessment/")
                 )
                 .build();
     }
