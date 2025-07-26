@@ -12,20 +12,23 @@ import PatientListView from "./pages/PatientListView.tsx";
 import PatientCreateView from "./pages/PatientCreateView.tsx";
 import Layout from "./layouts/Layout.tsx";
 import PatientUpdateView from "./pages/PatientUpdateView.tsx";
+import GlobalAlertProvider from "./shared/components/globalAlert/GlobalAlertProvider.tsx";
 
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>
-            <Routes>
-                <Route element={<Layout/>}>
-                    <Route path="/" element={<HomeView/>}></Route>
-                    <Route path="/patients" element={<PatientListView/>}></Route>
-                    <Route path="/patients/create" element={<PatientCreateView/>}></Route>
-                    <Route path="/patients/:paramPatientId" element={<PatientUpdateView/>}></Route>
-                    <Route path="*" element={<NotFoundView/>}></Route>
-                </Route>
-            </Routes>
+            <GlobalAlertProvider>
+                <Routes>
+                    <Route element={<Layout/>}>
+                        <Route path="/" element={<HomeView/>}></Route>
+                        <Route path="/patients" element={<PatientListView/>}></Route>
+                        <Route path="/patients/create" element={<PatientCreateView/>}></Route>
+                        <Route path="/patients/:paramPatientId" element={<PatientUpdateView/>}></Route>
+                        <Route path="*" element={<NotFoundView/>}></Route>
+                    </Route>
+                </Routes>
+            </GlobalAlertProvider>
         </BrowserRouter>
     </StrictMode>
 )

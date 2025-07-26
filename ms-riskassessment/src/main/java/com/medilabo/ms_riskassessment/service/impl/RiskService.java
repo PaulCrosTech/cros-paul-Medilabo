@@ -52,10 +52,6 @@ public class RiskService implements IRiskService {
         log.debug("===> notes {}", notes);
         log.debug("===> riskTriggersQty {}", riskTriggersQty);
 
-        // Female <= 30 with riskTriggersQty == 2 or 3 => NONE
-        // Male <= 30 with riskTriggersQty <= 2 ==> NONE
-        // Male Or Female : riskTriggersQty <= 1 ==> NONE
-
         // Default risk level
         RiskLevel riskLevel = RiskLevel.NA;
 
