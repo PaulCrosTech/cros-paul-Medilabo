@@ -40,6 +40,11 @@ public class RiskController {
         return riskService.calculateRiskOfPatientId(patientId);
     }
 
+    /**
+     * Retrieves all risk assessments.
+     *
+     * @return a map containing all risk assessments
+     */
     @GetMapping(path = "", headers = "X-API-VERSION=1")
     public Map<String, String> getAllRiskAssessments() {
         log.info("====> GET /risks <====");

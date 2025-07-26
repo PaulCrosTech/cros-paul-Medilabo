@@ -41,9 +41,9 @@ public class CustomErrorDecoder implements ErrorDecoder {
                         throw new URISyntaxException(uri.toString(), "Invalid URI format");
                     }
                     String patientId = matcher.group(1);
-                    return new PatientNotFoundException(patientId);
+                    return new PatientNotFoundException(Integer.parseInt(patientId));
                 } catch (URISyntaxException ex) {
-                    return new PatientNotFoundException("-1");
+                    return new PatientNotFoundException(-1);
                 }
             }
         } else if (invoquer.contains("MsNoteProxy#getByPatientId")) {
@@ -58,9 +58,9 @@ public class CustomErrorDecoder implements ErrorDecoder {
                         throw new URISyntaxException(uri.toString(), "Invalid URI format");
                     }
                     String patientId = matcher.group(1);
-                    return new PatientNotFoundException(patientId);
+                    return new PatientNotFoundException(Integer.parseInt(patientId));
                 } catch (URISyntaxException ex) {
-                    return new PatientNotFoundException("-1");
+                    return new PatientNotFoundException(-1);
                 }
             }
         }

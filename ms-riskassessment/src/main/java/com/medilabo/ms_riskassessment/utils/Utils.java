@@ -8,15 +8,20 @@ import java.time.Period;
  */
 public class Utils {
 
+
     /**
-     * Calculate age from birthdate.
+     * Calculates the age based on the given birthdate.
      *
-     * @param birthDate the birthdate of the patient
-     * @return the age of the patient in years
+     * @param birthDate the birthdate of the person
+     * @return the age in years
+     * @throws IllegalArgumentException if the birthdate is after the current date
      */
-    public static int calculateAge(LocalDate birthDate) {
+    public static int calculateAge(LocalDate birthDate) throws IllegalArgumentException {
         LocalDate today = LocalDate.now();
+        if (birthDate.isAfter(today)) {
+            throw new IllegalArgumentException("Birth date is after today");
+        }
+
         return Period.between(birthDate, today).getYears();
     }
-
 }

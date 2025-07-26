@@ -20,7 +20,7 @@ public interface IRiskService {
     /**
      * Retrieves all risk assessments by ordering them by risk level.
      *
-     * @return a List of risk assessment
+     * @return a Map (key,value) of risk assessment
      */
     Map<String, String> getAll();
 

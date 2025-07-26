@@ -46,64 +46,61 @@ public class RiskService implements IRiskService {
         int age = Utils.calculateAge(LocalDate.parse(patient.getBirthDate()));
         long riskTriggersQty = countRiskTriggers(notes, RiskTrigger.getLabels());
 
-
-        log.info("===> Calculating Risk of Patient Id {} <====", patientId);
-        log.info("===> age {}", age);
-        log.info("===> gender {}", patient.getGender());
-        log.info("===> notes {}", notes);
-        log.info("===> riskTriggersQty {}", riskTriggersQty);
-//        log.info("===> RiskTrigger {}", RiskTrigger.HEMOGLOBINE_A1C);
-//        log.info("===> RiskTrigger {}", RiskTrigger.HEMOGLOBINE_A1C.getLabel());
-//        log.info("===> RiskTrigger {}", RiskTrigger.getLabels());
-
-        // Main risk assessment logic
-//        RiskLevel riskLevel = RiskLevel.NA;
-//
+        log.debug("===> Calculating Risk of Patient Id {} <====", patientId);
+        log.debug("===> age {}", age);
+        log.debug("===> gender {}", patient.getGender());
+        log.debug("===> notes {}", notes);
+        log.debug("===> riskTriggersQty {}", riskTriggersQty);
 
         // Female <= 30 with riskTriggersQty == 2 or 3 => NONE
         // Male <= 30 with riskTriggersQty <= 2 ==> NONE
         // Male Or Female : riskTriggersQty <= 1 ==> NONE
-        RiskLevel riskLevel = RiskLevel.NONE;
 
-        if (riskTriggersQty > 1) {
+        // Default risk level
+        RiskLevel riskLevel = RiskLevel.NA;
 
-            if (age > 30) {
-                log.info("===> Age > 30 <====");
-                if (riskTriggersQty >= 2 && riskTriggersQty <= 5) {
-                    log.info("===> riskTriggersQty >= 2 && <=5 <====");
-                    riskLevel = RiskLevel.BORDERLINE;
-                } else if (riskTriggersQty <= 7) {
-                    log.info("===> riskTriggersQty <= 7 <====");
+        if (riskTriggersQty <= 1) {
+            log.debug("===> riskTriggersQty <= 1 <====");
+            log.debug("===> Result {}", RiskLevel.NONE);
+            return RiskLevel.NONE;
+        }
+
+        if (age > 30) {
+            log.debug("===> Age > 30 <====");
+            if (riskTriggersQty >= 2 && riskTriggersQty <= 5) {
+                log.debug("===> riskTriggersQty >= 2 && <=5 <====");
+                riskLevel = RiskLevel.BORDERLINE;
+            } else if (riskTriggersQty <= 7) {
+                log.debug("===> riskTriggersQty <= 7 <====");
+                riskLevel = RiskLevel.IN_DANGER;
+            } else {
+                log.debug("===> riskTriggersQty > 7 <====");
+                riskLevel = RiskLevel.EARLY_ONSET;
+            }
+        } else {
+            log.debug("===> Age <= 30 <====");
+            if (patient.getGender().equals("M")) {
+                if (riskTriggersQty >= 3 && riskTriggersQty < 5) {
+                    log.debug("===> riskTriggersQty >= 3 && <5 <====");
                     riskLevel = RiskLevel.IN_DANGER;
-                } else {
-                    log.info("===> riskTriggersQty > 7 <====");
+                } else if (riskTriggersQty >= 5) {
+                    log.debug("===> riskTriggersQty >= 5 <====");
                     riskLevel = RiskLevel.EARLY_ONSET;
                 }
-            } else {
-                log.info("===> Age <= 30 <====");
-                if (patient.getGender().equals("M")) {
-                    if (riskTriggersQty >= 3 && riskTriggersQty < 5) {
-                        log.info("===> riskTriggersQty >= 3 && <5 <====");
-                        riskLevel = RiskLevel.IN_DANGER;
-                    } else if (riskTriggersQty >= 5) {
-                        log.info("===> riskTriggersQty >= 5 <====");
-                        riskLevel = RiskLevel.EARLY_ONSET;
-                    }
-                } else if (patient.getGender().equals("F")) {
-                    if (riskTriggersQty >= 4 && riskTriggersQty < 7) {
-                        log.info("===> riskTriggersQty >= 4 && <=7 <====");
-                        riskLevel = RiskLevel.IN_DANGER;
-                    } else if (riskTriggersQty >= 7) {
-                        log.info("===> riskTriggersQty >= 7 <====");
-                        riskLevel = RiskLevel.EARLY_ONSET;
-                    }
+            } else if (patient.getGender().equals("F")) {
+                if (riskTriggersQty >= 4 && riskTriggersQty < 7) {
+                    log.debug("===> riskTriggersQty >= 4 && <7 <====");
+                    riskLevel = RiskLevel.IN_DANGER;
+                } else if (riskTriggersQty >= 7) {
+                    log.debug("===> riskTriggersQty >= 7 <====");
+                    riskLevel = RiskLevel.EARLY_ONSET;
                 }
             }
         }
 
+        log.debug("===> Result {}", riskLevel);
+
         return riskLevel;
-
-
     }
 
     /**
@@ -116,16 +113,6 @@ public class RiskService implements IRiskService {
      */
     private long countRiskTriggers(List<NoteBean> notes, List<String> riskTriggers) {
 
-//        return notes.stream()
-//                .mapToLong(
-//                        note -> riskTriggers.stream()
-//                                .filter(riskTrigger -> note.getNote().toLowerCase().contains(riskTrigger.toLowerCase()))
-//                                .distinct()
-//                                .count()
-//
-//                )
-//                .sum();
-
         return notes.stream()
                 .mapToLong(note -> {
                     List<String> matchingTriggers = riskTriggers.stream()
@@ -133,7 +120,7 @@ public class RiskService implements IRiskService {
                             .distinct()
                             .collect(Collectors.toList());
 
-                    log.info("===> Mots trouvés dans la note '{}': {}", note.getNote(), matchingTriggers);
+                    log.debug("===> Mots trouvés dans la note '{}': {}", note.getNote(), matchingTriggers);
 
                     return matchingTriggers.size();
                 })

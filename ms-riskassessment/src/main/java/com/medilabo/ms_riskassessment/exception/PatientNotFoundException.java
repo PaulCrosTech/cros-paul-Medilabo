@@ -16,7 +16,7 @@ public class PatientNotFoundException extends RuntimeException {
      *
      * @param patientId the ID of the patient that was not found
      */
-    public PatientNotFoundException(String patientId) {
+    public PatientNotFoundException(int patientId) {
         super(DEFAULT_MESSAGE + patientId);
         log.error("====> <exception> PatientNotFoundException : {} <====", DEFAULT_MESSAGE + patientId);
     }
