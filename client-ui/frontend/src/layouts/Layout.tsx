@@ -4,6 +4,7 @@ import GlobalAlertProvider from "../shared/components/globalAlert/GlobalAlertPro
 import GlobalAlert from "../shared/components/globalAlert/GlobalAlert.tsx";
 
 function Layout() {
+
     return (
         <main>
             <GlobalAlertProvider>

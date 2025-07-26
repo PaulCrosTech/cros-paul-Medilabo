@@ -10,6 +10,7 @@ import {Form} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
 import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
+import RiskAssessmentContext from "../RiskAssessment/RiskAssessmentContext.tsx";
 
 function fetchNotes(
     patientId: number,
@@ -35,6 +36,7 @@ function NoteList() {
 
     const {paramPatientId} = useParams();
     const patientId: number = Number(paramPatientId);
+    const {setRiskAssessmentRefresh} = useContext(RiskAssessmentContext);
     const [notes, setNotes] = useState<Note[]>([]);
 
     const {setGlobalAlert} = useContext(GlobalAlertContext);
@@ -78,6 +80,7 @@ function NoteList() {
                 fetchNotes(patientId, setNotes, setLoading);
                 setShowModal(false);
                 setSelectedNoteId(null);
+                setRiskAssessmentRefresh(true);
             });
     };
 
@@ -104,6 +107,7 @@ function NoteList() {
                 });
                 fetchNotes(patientId, setNotes, setLoading);
                 setFormValidation(false);
+                setRiskAssessmentRefresh(true);
                 form.reset();
             })
             .catch(() => {

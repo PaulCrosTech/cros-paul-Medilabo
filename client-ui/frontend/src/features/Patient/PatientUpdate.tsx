@@ -8,7 +8,7 @@ import {faPen} from "@fortawesome/free-solid-svg-icons";
 import type {Gender} from "../../domain/Gender.tsx";
 import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
 import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
-
+import RiskAssessmentContext from "../RiskAssessment/RiskAssessmentContext.tsx";
 
 function PatientUpdate() {
 
@@ -16,6 +16,7 @@ function PatientUpdate() {
     const patientId: number = Number(paramPatientId);
 
     const {setGlobalAlert} = useContext(GlobalAlertContext);
+    const {setRiskAssessmentRefresh} = useContext(RiskAssessmentContext);
 
     const [patient, setPatient] = useState<Patient>();
     const [loading, setLoading] = useState<'loading' | 'failed' | 'loaded'>('loading');
@@ -53,6 +54,7 @@ function PatientUpdate() {
                     variant: "success",
                     show: true
                 });
+                setRiskAssessmentRefresh(true);
             })
             .catch(() => {
                 setGlobalAlert({

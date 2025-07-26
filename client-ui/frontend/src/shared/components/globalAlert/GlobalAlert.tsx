@@ -8,7 +8,7 @@ function GlobalAlert() {
     const {globalAlert} = useContext(GlobalAlertContext);
 
     if (!globalAlert.show) {
-        return null;
+        return <></>;
     }
 
     return (
