@@ -8,3 +8,6 @@ export const createNote = (patientId: number, note: string) => {
         note: note
     });
 }
+export const updateNote = (noteId: string, noteContent: string) => {
+    return axiosInstance.put(`/notes/${noteId}`, noteContent);
+}

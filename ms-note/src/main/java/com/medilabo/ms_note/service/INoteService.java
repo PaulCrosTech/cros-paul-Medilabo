@@ -1,7 +1,7 @@
 package com.medilabo.ms_note.service;
 
-import com.medilabo.ms_note.beans.PatientBean;
 import com.medilabo.ms_note.dto.NoteCreateDto;
+import com.medilabo.ms_note.dto.NoteUpdateDto;
 import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.exception.NoteNotFoundException;
 import com.medilabo.ms_note.exception.PatientNotFoundException;
@@ -36,13 +36,14 @@ public interface INoteService {
      */
     Note create(NoteCreateDto noteCreateDto) throws PatientNotFoundException;
 
+
     /**
      * Update an existing note.
      *
-     * @param id   the ID of the note to update
-     * @param note the updated note content
-     * @return the updated Note entity
+     * @param id            the ID of the note to update
+     * @param noteUpdateDto the updated note data
+     * @return the updated Note
      * @throws NoteNotFoundException if no note with the specified ID is found
      */
-    Note update(String id, String note) throws NoteNotFoundException;
+    Note update(String id, NoteUpdateDto noteUpdateDto) throws NoteNotFoundException;
 }

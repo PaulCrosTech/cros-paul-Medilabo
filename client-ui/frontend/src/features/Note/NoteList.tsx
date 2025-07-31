@@ -1,9 +1,9 @@
 import Table from "react-bootstrap/Table";
 import DeleteButton from "../../shared/components/DeleteButton.tsx";
-import {createNote, deleteById, getByPatientId} from "../../services/ApiNote.tsx";
+import {createNote, deleteById, getByPatientId, updateNote} from "../../services/ApiNote.tsx";
 import {useParams} from 'react-router';
 import Note from "../../domain/Note.tsx";
-import {faNotesMedical} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faNotesMedical, faTimes} from "@fortawesome/free-solid-svg-icons";
 import ModalConfirmation from "../../shared/components/ModalConfirmation.tsx";
 import React, {useContext, useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import GlobalAlertContext from "../../shared/components/globalAlert/GlobalAlertContext.tsx";
 import LoadingComponent from "../../shared/components/LoadingComponent.tsx";
 import RiskAssessmentContext from "../RiskAssessment/RiskAssessmentContext.tsx";
+import UpdateButton from "../../shared/components/UpdateButton.tsx";
 
 function fetchNotes(
     patientId: number,
@@ -46,6 +47,11 @@ function NoteList() {
 
     const [showModal, setShowModal] = useState(false);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+
+    const [updateNoteId, setUpdateNoteId] = useState<string | null>(null);
+    const [updateNoteContent, setUpdateNoteContent] = useState<string>("");
+    const [updateNoteContentIsInvalid, setUpdateNoteContentIsInvalid] = useState<boolean>(false);
+
     const handleTableDeleteButton = (noteId: string) => {
         setSelectedNoteId(noteId);
         setShowModal(true);
@@ -119,6 +125,48 @@ function NoteList() {
             })
     }
 
+    function handleTableUpdateButton(note: Note) {
+        setUpdateNoteId(note.id);
+        setUpdateNoteContent(note.note);
+    }
+
+    function handleUpdateValidation() {
+        if (updateNoteId === null) return;
+        if (updateNoteContent.trim() === "") {
+            setUpdateNoteContentIsInvalid(true);
+            return;
+        }
+
+        updateNote(updateNoteId, updateNoteContent).then(
+            () => {
+                setGlobalAlert({
+                    message: <>La note a été mise à jour.</>,
+                    variant: "success",
+                    show: true
+                });
+                fetchNotes(patientId, setNotes, setLoading);
+                setRiskAssessmentRefresh(true);
+            })
+            .catch(() => {
+                setGlobalAlert({
+                    message: <>Une erreur est survenue lors de la mise à jour de la note.</>,
+                    variant: "danger",
+                    show: true
+                });
+            })
+            .finally(() => {
+                    setUpdateNoteId(null);
+                    setUpdateNoteContent("");
+                    setUpdateNoteContentIsInvalid(false);
+                }
+            );
+    }
+
+    function handleUpdateCancel() {
+        setUpdateNoteId(null);
+        setUpdateNoteContent("");
+    }
+
 
     useEffect(() => {
         fetchNotes(patientId, setNotes, setLoading);
@@ -148,12 +196,63 @@ function NoteList() {
                 {notes.map(note => {
                     return (
                         <tr key={note.id}>
-                            <td className={"col-9"} style={{whiteSpace: "pre-wrap"}}>
-                                {note.note}
+                            <td className={"col-8"} style={{whiteSpace: "pre-wrap"}}>
+                                {note.id === updateNoteId ? (
+
+                                        <Form.Group controlId="formUpdateNoteContent">
+                                            <Form.Control
+                                                as="textarea"
+                                                required
+                                                isInvalid={updateNoteContentIsInvalid}
+                                                value={updateNoteContent}
+                                                onChange={(e) => {
+                                                    setUpdateNoteContent(e.target.value);
+                                                }}
+                                                style={{height: "100px"}}
+                                            />
+                                            <Form.Control.Feedback type="invalid">
+                                                Le contenu de la note est requis.
+                                            </Form.Control.Feedback>
+                                        </Form.Group>
+                                    )
+                                    : (
+                                        <>
+                                            {note.note}
+                                        </>
+                                    )}
                             </td>
                             <td className={"col-2 text-center"}><i>{note.getCreatedAtFormatted()}</i></td>
-                            <td className={"col-1 text-center align-content-center"}>
-                                <DeleteButton onClick={() => handleTableDeleteButton(note.id)}/>
+
+                            <td className={"col-2 text-center"}>
+                                <div style={{gridTemplateColumns: "1fr 1fr"}} className={"d-grid column-gap-0"}>
+                                    {note.id === updateNoteId ? (
+                                        <>
+                                            <div>
+                                                <button
+                                                    onClick={() => handleUpdateValidation()}
+                                                    className="btn btn-success text-white">
+                                                    <FontAwesomeIcon icon={faCheck}/>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button
+                                                    onClick={handleUpdateCancel}
+                                                    className="btn btn-secondary text-white">
+                                                    <FontAwesomeIcon icon={faTimes}/>
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div>
+                                                <UpdateButton onClick={() => handleTableUpdateButton(note)}/>
+                                            </div>
+                                            <div>
+                                                <DeleteButton onClick={() => handleTableDeleteButton(note.id)}/>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     );
@@ -164,7 +263,7 @@ function NoteList() {
                 <Table bordered>
                     <tfoot>
                     <tr>
-                        <td className={"col-9"} colSpan={2}>
+                        <td className={"col-10"} colSpan={2}>
                             <Form.Group controlId="formNoteContent">
                                 <Form.Control
                                     as="textarea"
@@ -180,7 +279,7 @@ function NoteList() {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </td>
-                        <td className={"col-1 text-center align-content-center"}>
+                        <td className={"col-2 text-center align-content-center"}>
                             <button type="submit"
                                     className="btn btn-success text-white">
                                 <FontAwesomeIcon icon={faNotesMedical}/>

@@ -3,6 +3,7 @@ package com.medilabo.ms_note.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medilabo.ms_note.controller.NoteController;
 import com.medilabo.ms_note.dto.NoteCreateDto;
+import com.medilabo.ms_note.dto.NoteUpdateDto;
 import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.exception.NoteNotFoundException;
 import com.medilabo.ms_note.exception.PatientNotFoundException;
@@ -208,20 +209,44 @@ public class NoteControllerTest {
     public void givenValidNote_whenUpdateNote_thenReturnOk() throws Exception {
         // Given
         String noteId = "1";
-        String updatedNoteContent = "Updated note content";
+        NoteUpdateDto noteUpdateDto = new NoteUpdateDto("Updated note content");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String noteUpdateDtoJson = objectMapper.writeValueAsString(noteUpdateDto);
 
-        Note updatedNote = new Note();
-        updatedNote.setId(noteId);
-        updatedNote.setNote(updatedNoteContent);
-
-        when(noteService.update(noteId, updatedNoteContent)).thenReturn(updatedNote);
+        when(noteService.update(noteId, noteUpdateDto)).thenReturn(new Note());
 
         // When & Then
         mockMvc.perform(put("/notes/{id}", noteId)
-                        .header("X-API-VERSION", "1")
-                        .contentType("application/json")
-                        .content(updatedNoteContent))
-                .andExpect(status().isOk());
+                .header("X-API-VERSION", "1")
+                .contentType("application/json")
+                .content(noteUpdateDtoJson)
+        ).andExpect(status().isOk());
+    }
+
+
+    /**
+     * Test method: updateNote
+     * Given: an invalid note content (empty)
+     * When: PUT /notes/{id}
+     * Then: Return status Bad Request (400)
+     *
+     * @throws Exception if an error occurs during the request
+     */
+    @Test
+    public void giventInvalidNote_whenUpdateNote_thenReturnBadRequest() throws Exception {
+        // Given
+        String noteId = "1";
+        NoteUpdateDto noteUpdateDto = new NoteUpdateDto("");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String noteUpdateDtoJson = objectMapper.writeValueAsString(noteUpdateDto);
+
+        // When & Then
+        mockMvc.perform(put("/notes/{id}", noteId)
+                .header("X-API-VERSION", "1")
+                .contentType("application/json")
+                .content(noteUpdateDtoJson)
+        ).andExpect(status().isBadRequest());
     }
 
     /**
@@ -236,19 +261,18 @@ public class NoteControllerTest {
     public void givenNonExistingNote_whenUpdateNote_thenReturnNotFound() throws Exception {
         // Given
         String noteId = "non-existing-id";
-        String updatedNoteContent = "Updated note content";
+        NoteUpdateDto noteUpdateDto = new NoteUpdateDto("Updated note content");
 
-        Note updatedNote = new Note();
-        updatedNote.setId(noteId);
-        updatedNote.setNote(updatedNoteContent);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String noteUpdateDtoJson = objectMapper.writeValueAsString(noteUpdateDto);
 
-        doThrow(new NoteNotFoundException(noteId)).when(noteService).update(noteId, updatedNoteContent);
+        doThrow(new NoteNotFoundException(noteId)).when(noteService).update(noteId, noteUpdateDto);
 
         // When & Then
         mockMvc.perform(put("/notes/{id}", noteId)
                         .header("X-API-VERSION", "1")
                         .contentType("application/json")
-                        .content(updatedNoteContent))
+                        .content(noteUpdateDtoJson))
                 .andExpect(status().isNotFound());
     }
 

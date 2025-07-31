@@ -1,6 +1,7 @@
 package com.medilabo.ms_note.unit.service;
 
 import com.medilabo.ms_note.dto.NoteCreateDto;
+import com.medilabo.ms_note.dto.NoteUpdateDto;
 import com.medilabo.ms_note.entity.Note;
 import com.medilabo.ms_note.exception.NoteNotFoundException;
 import com.medilabo.ms_note.exception.PatientNotFoundException;
@@ -162,16 +163,16 @@ public class NoteServiceTest {
     public void givenExistingId_whenUpdate_thenReturnUpdatedNote() {
         // Given
         Note note = notes.getFirst();
-        String noteContent = "Update Note Content";
+        NoteUpdateDto noteUpdateDto = new NoteUpdateDto("Update Note Content");
 
         when(noteRepository.findById(note.getId())).thenReturn(Optional.of(note));
         when(noteRepository.save(any())).thenReturn(note);
 
         // When
-        Note updatedNote = noteService.update(note.getId(), noteContent);
+        Note updatedNote = noteService.update(note.getId(), noteUpdateDto);
 
         // Then
-        assertEquals(noteContent, updatedNote.getNote());
+        assertEquals(noteUpdateDto.getNote(), updatedNote.getNote());
     }
 
     /**
@@ -184,9 +185,10 @@ public class NoteServiceTest {
     public void givenNonExistingId_whenUpdate_thenThrowNoteNotFoundException() {
         //Given
         String nonExistingId = "NON-EXISTING-ID";
+        NoteUpdateDto noteUpdateDto = new NoteUpdateDto("Update Note Content");
         when(noteRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(NoteNotFoundException.class, () -> noteService.update(nonExistingId, "Some Note Content"));
+        assertThrows(NoteNotFoundException.class, () -> noteService.update(nonExistingId, noteUpdateDto));
     }
 }
