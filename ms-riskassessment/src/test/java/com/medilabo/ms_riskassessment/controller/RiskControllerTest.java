@@ -70,25 +70,6 @@ public class RiskControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-//    /**
-//     * Test method: getAllRiskAssessments
-//     * Given: an invalid patient ID format
-//     * When: GET /risks
-//     * Then: Return status Bad Request (400)
-//     *
-//     * @throws Exception if an error occurs during the request
-//     */
-//    @Test
-//    public void givenInvalidPatientId_whenCalculateRiskOfPatientId_thenReturnBadRequest() throws Exception {
-//        // Given
-//        String invalidPatientId = "1z";
-//
-//        // When & Then
-//        mockMvc.perform(get("/risks/{patientId}", invalidPatientId)
-//                        .header("X-API-VERSION", "1"))
-//                .andExpect(status().isBadRequest());
-//    }
-
     /**
      * Test method: getAllRiskAssessments
      * Given: a request to get all risk assessments

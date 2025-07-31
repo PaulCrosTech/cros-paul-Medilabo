@@ -24,9 +24,4 @@ public class Utils {
 
         return Period.between(birthDate, today).getYears();
     }
-
-//    public static boolean isOverAgeOf(int age)
-//    {
-//        Utils.calculateAge()
-//    }
 }

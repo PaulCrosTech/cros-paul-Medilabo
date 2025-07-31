@@ -99,6 +99,7 @@ public class RiskServiceTest {
         assertEquals(result.size(), riskService.getAll().size());
     }
 
+
     /**
      * Test method: calculateRiskOfPatientId
      * Given: an invalid patient ID

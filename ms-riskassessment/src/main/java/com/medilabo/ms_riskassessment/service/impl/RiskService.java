@@ -27,27 +27,39 @@ public class RiskService implements IRiskService {
 
     private final MsPatientProxy msPatientProxy;
     private final MsNoteProxy msNoteProxy;
+    private static final int AGE_THRESHOLD = 30;
 
+    /**
+     * Constructor for RiskService.
+     *
+     * @param msPatientProxy the proxy for patient-related operations
+     * @param msNoteProxy    the proxy for note-related operations
+     */
     public RiskService(MsPatientProxy msPatientProxy, MsNoteProxy msNoteProxy) {
         this.msPatientProxy = msPatientProxy;
         this.msNoteProxy = msNoteProxy;
         log.info("====> RiskService initialized <====");
     }
 
+
     /**
-     * Constructor for RiskService.
+     * Calculates the risk level of a patient based on their ID.
+     *
+     * @param patientId the ID of the patient
+     * @return the risk level of the patient as a RiskLevel enum
+     * @throws IllegalArgumentException if the patient ID is invalid, or if the birthdate is after today
      */
     @Override
-    public RiskLevel calculateRiskOfPatientId(int patientId) {
+    public RiskLevel calculateRiskOfPatientId(int patientId) throws IllegalArgumentException {
 
         // Retrieve main datas
         PatientBean patient = msPatientProxy.getByPatientId(patientId);
         List<NoteBean> notes = msNoteProxy.getByPatientId(patientId);
-        int age = Utils.calculateAge(LocalDate.parse(patient.getBirthDate()));
+        boolean isAgeOverThreshold = isAgeOverThreshold(LocalDate.parse(patient.getBirthDate()));
         long riskTriggersQty = countRiskTriggers(notes, RiskTrigger.getLabels());
 
         log.debug("===> Calculating Risk of Patient Id {} <====", patientId);
-        log.debug("===> age {}", age);
+        log.debug("===> age over {} : {}", AGE_THRESHOLD, isAgeOverThreshold);
         log.debug("===> gender {}", patient.getGender());
         log.debug("===> notes {}", notes);
         log.debug("===> riskTriggersQty {}", riskTriggersQty);
@@ -61,8 +73,8 @@ public class RiskService implements IRiskService {
             return RiskLevel.NONE;
         }
 
-        if (age > 30) {
-            log.debug("===> Age > 30 <====");
+        if (isAgeOverThreshold) {
+            log.debug("===> Age > {} <====", AGE_THRESHOLD);
             if (riskTriggersQty >= 2 && riskTriggersQty <= 5) {
                 log.debug("===> riskTriggersQty >= 2 && <=5 <====");
                 riskLevel = RiskLevel.BORDERLINE;
@@ -74,7 +86,7 @@ public class RiskService implements IRiskService {
                 riskLevel = RiskLevel.EARLY_ONSET;
             }
         } else {
-            log.debug("===> Age <= 30 <====");
+            log.debug("===> Age <= {} <====", AGE_THRESHOLD);
             if (patient.getGender().equals("M")) {
                 if (riskTriggersQty >= 3 && riskTriggersQty < 5) {
                     log.debug("===> riskTriggersQty >= 3 && <5 <====");
@@ -122,6 +134,17 @@ public class RiskService implements IRiskService {
                 })
                 .sum();
 
+    }
+
+
+    /**
+     * Checks if the patient is over a certain age threshold.
+     *
+     * @param birthDate the birthdate of the patient
+     * @return true if the patient is over the specified age, false otherwise
+     */
+    private boolean isAgeOverThreshold(LocalDate birthDate) throws IllegalArgumentException {
+        return Utils.calculateAge(birthDate) > AGE_THRESHOLD;
     }
 
 
