@@ -1,0 +1,120 @@
+name: Medilabo
+
+services:
+
+  # MySQL Database Service
+  dbMySQL:
+    image: mysql:8.0
+    container_name: medilabo_db_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: medilabo_patient
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - rsx-backend
+    volumes:
+      - ./ms-patient/src/main/resources/docker/ms_patient_data.sql:/docker-entrypoint-initdb.d/ms_patient_data.sql:ro
+      - mysql-for-MsPatient:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  # MongoDB Database Service
+  dbMongoDB:
+    image: mongo:latest
+    container_name: medilabo_db_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: medilabo_note
+      MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
+      MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
+    volumes:
+      - ./ms-note/src/main/resources/docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongoDB-for-MsNote:/data/db
+    networks:
+      - rsx-backend
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  # Eureka Microservice
+  ms-eureka:
+    build: ./ms-eureka
+    container_name: medilabo_ms_eureka
+    networks:
+      - rsx-backend
+
+  # Patient Microservice
+  ms-patient:
+    build: ./ms-patient
+    container_name: medilabo_ms_patient
+    depends_on:
+      dbMySQL:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+    networks:
+      - rsx-backend
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  
+  # Note Microservice
+  ms-note:
+    build: ./ms-note
+    container_name: medilabo_ms_note
+    depends_on:
+      dbMongoDB:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_started
+    networks:
+      - rsx-backend
+    environment:
+      MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
+      MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
+
+  # Risk Microservice
+  ms-riskassessment:
+    build: ./ms-riskassessment
+    container_name: medilabo_ms_riskassessment
+    depends_on:
+      ms-eureka:
+        condition: service_started
+    networks:
+      - rsx-backend
+
+  # Gateway Microservice
+  ms-gateway:
+    build: ./ms-gateway
+    container_name: medilabo_ms_gateway
+    ports:
+      - "9001:9001"
+    depends_on:
+      ms-eureka:
+        condition: service_started
+    networks:
+      - rsx-backend
+
+  #   Frontend Service
+  frontend:
+    build: ./client-ui/frontend
+    container_name: medilabo_frontend
+    ports:
+      - "9080:9080"
+
+# Network Configuration
+networks:
+  rsx-backend:
+    driver: bridge
+
+# Volume Configuration
+volumes:
+  mongoDB-for-MsNote:
+  mysql-for-MsPatient:
