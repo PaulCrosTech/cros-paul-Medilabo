@@ -2,6 +2,39 @@ name: Medilabo
 
 services:
 
+  # Eureka Microservice
+  ms-eureka:
+    build: ./ms-eureka
+    container_name: medilabo_ms_eureka
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9002/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+    networks:
+      - rsx-backend
+
+
+  # Config Microservice
+  ms-config:
+    build: ./ms-config
+    container_name: medilabo_ms_config
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9088/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+    depends_on:
+      ms-eureka:
+        condition: service_healthy
+    environment:
+      GIT_URI: ${GIT_URI}
+      GIT_USERNAME: ${GIT_USERNAME}
+      GIT_PASSWORD_PAT: ${GIT_PASSWORD_PAT}
+    networks:
+      - rsx-backend
+
+
   # MySQL Database Service
   dbMySQL:
     image: mysql:8.0
@@ -43,37 +76,34 @@ services:
       retries: 5
       timeout: 5s
 
-  # Eureka Microservice
-  ms-eureka:
-    build: ./ms-eureka
-    container_name: medilabo_ms_eureka
-    networks:
-      - rsx-backend
-
   # Patient Microservice
   ms-patient:
     build: ./ms-patient
     container_name: medilabo_ms_patient
     depends_on:
+      ms-config:
+        condition: service_healthy
       dbMySQL:
         condition: service_healthy
       ms-eureka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - rsx-backend
     environment:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  
+
   # Note Microservice
   ms-note:
     build: ./ms-note
     container_name: medilabo_ms_note
     depends_on:
+      ms-config:
+        condition: service_healthy
       dbMongoDB:
         condition: service_healthy
       ms-eureka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - rsx-backend
     environment:
@@ -85,8 +115,10 @@ services:
     build: ./ms-riskassessment
     container_name: medilabo_ms_riskassessment
     depends_on:
+      ms-config:
+        condition: service_healthy
       ms-eureka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - rsx-backend
 
@@ -97,8 +129,10 @@ services:
     ports:
       - "9001:9001"
     depends_on:
+      ms-config:
+        condition: service_healthy
       ms-eureka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - rsx-backend
 
