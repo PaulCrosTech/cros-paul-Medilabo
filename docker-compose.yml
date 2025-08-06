@@ -31,6 +31,7 @@ services:
       GIT_URI: ${GIT_URI}
       GIT_USERNAME: ${GIT_USERNAME}
       GIT_PASSWORD_PAT: ${GIT_PASSWORD_PAT}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     networks:
       - rsx-backend
 
@@ -75,6 +76,7 @@ services:
       interval: 10s
       retries: 5
       timeout: 5s
+    command: --quiet
 
   # Patient Microservice
   ms-patient:
@@ -92,8 +94,9 @@ services:
     environment:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
-  # Note Microservice
+    # Note Microservice
   ms-note:
     build: ./ms-note
     container_name: medilabo_ms_note
@@ -109,6 +112,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
       MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
   # Risk Microservice
   ms-riskassessment:
@@ -121,6 +125,8 @@ services:
         condition: service_healthy
     networks:
       - rsx-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
   # Gateway Microservice
   ms-gateway:
@@ -135,6 +141,8 @@ services:
         condition: service_healthy
     networks:
       - rsx-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
   #   Frontend Service
   frontend:
