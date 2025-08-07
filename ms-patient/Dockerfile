@@ -1,15 +1,24 @@
 FROM maven:3.9.11-eclipse-temurin-21
 LABEL authors="Paul CROS"
 
-RUN mkdir /opt/app
-ADD . /opt/app
+RUN mkdir /opt/app-source && \
+    mkdir /opt/app
 
-WORKDIR /opt/app
-RUN mvn clean package -DskipTests --update-snapshots --batch-mode --file ./pom.xml
+ADD . /opt/app-source
+
+WORKDIR /opt/app-source
+
+RUN mvn clean compile --update-snapshots --batch-mode --file ./pom.xml \
+    && mvn package -DskipTests --batch-mode --file ./pom.xml \
+    && cp target/*.jar /opt/app
+
+WORKDIR /opt
+
+RUN rm -rf /opt/app-source
 
 EXPOSE 9005
 
-ENTRYPOINT ["java", "-jar", "/opt/app/target/ms-patient-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/opt/app/ms-patient-0.0.1-SNAPSHOT.jar"]
 
 
 

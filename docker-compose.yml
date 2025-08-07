@@ -143,6 +143,8 @@ services:
       - rsx-backend
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      MS_GATEWAY_SECURITY_USER: ${MS_GATEWAY_SECURITY_USER}
+      MS_GATEWAY_SECURITY_PASSWORD: ${MS_GATEWAY_SECURITY_PASSWORD}
 
   #   Frontend Service
   frontend:

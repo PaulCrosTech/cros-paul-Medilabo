@@ -12,6 +12,11 @@ RUN mvn clean compile --update-snapshots --batch-mode --file ./pom.xml \
     && mvn package -DskipTests --batch-mode --file ./pom.xml \
     && cp target/*.jar /opt/app
 
+WORKDIR /opt
+
+RUN rm -rf /opt/app-source
+
+
 EXPOSE 9001
 
 ENTRYPOINT ["java", "-jar", "/opt/app/ms-gateway-0.0.1-SNAPSHOT.jar"]
