@@ -1,10 +1,18 @@
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
-export default defineConfig({
-    plugins: [react()],
-    server: {
-        port: 9080,
-    }
-})
+export default defineConfig(({mode}) => {
+
+    const isProduction = mode === 'production';
+
+    const config = {
+        plugins: [react()],
+        server: {
+            port: 9080,
+        },
+        envPrefix: ['MS_GATEWAY_SECURITY_', 'VITE_']
+    };
+
+    return isProduction ? config : {...config, envDir: '../../'};
+
+});

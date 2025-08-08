@@ -82,12 +82,15 @@ services:
   ms-patient:
     build: ./ms-patient
     container_name: medilabo_ms_patient
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9005/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
     depends_on:
       ms-config:
         condition: service_healthy
       dbMySQL:
-        condition: service_healthy
-      ms-eureka:
         condition: service_healthy
     networks:
       - rsx-backend
@@ -100,12 +103,15 @@ services:
   ms-note:
     build: ./ms-note
     container_name: medilabo_ms_note
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9006/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
     depends_on:
       ms-config:
         condition: service_healthy
       dbMongoDB:
-        condition: service_healthy
-      ms-eureka:
         condition: service_healthy
     networks:
       - rsx-backend
@@ -118,10 +124,13 @@ services:
   ms-riskassessment:
     build: ./ms-riskassessment
     container_name: medilabo_ms_riskassessment
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9007/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
     depends_on:
       ms-config:
-        condition: service_healthy
-      ms-eureka:
         condition: service_healthy
     networks:
       - rsx-backend
@@ -134,10 +143,17 @@ services:
     container_name: medilabo_ms_gateway
     ports:
       - "9001:9001"
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9001/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      retries: 3
+      timeout: 5s
     depends_on:
-      ms-config:
+      ms-note:
         condition: service_healthy
-      ms-eureka:
+      ms-riskassessment:
+        condition: service_healthy
+      ms-patient:
         condition: service_healthy
     networks:
       - rsx-backend
@@ -148,10 +164,18 @@ services:
 
   #   Frontend Service
   frontend:
-    build: ./client-ui/frontend
+    build:
+      context: ./client-ui/frontend
+      args:
+        MS_GATEWAY_SECURITY_USER: ${MS_GATEWAY_SECURITY_USER}
+        MS_GATEWAY_SECURITY_PASSWORD: ${MS_GATEWAY_SECURITY_PASSWORD}
     container_name: medilabo_frontend
     ports:
       - "9080:9080"
+    depends_on:
+      ms-gateway:
+        condition: service_healthy
+
 
 # Network Configuration
 networks:
