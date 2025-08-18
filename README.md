@@ -121,7 +121,7 @@ This file has been sent to you by the project manager.
   "MS_CONFIG_GIT_PAT": ""
 }
 ```
-_Note: This file contains the credentials required to access the Git repository where the microservices configuration files are stored.  
+_Note: This file contains the credentials required to access the Git repository where the microservices configuration files are stored. 
 In Docker mode, the ms-config service is essential as the configurations are fetched from the Git repository._
 
 Launch the project from the root directory:
@@ -134,7 +134,7 @@ Launch the project from the root directory:
   docker-compose down
 ```
 
-Containers are started in this order:
+Startup order:
 - ms-eureka, dbMySQL, dbMongoDB
 - ms-config
 - ms-note, ms-patient, ms-riskassessment
@@ -178,7 +178,7 @@ Run the script with mongo shell.
 _Note: data are persisted between restarts, you can re-run the script to re-create the data._
 
 Create an ```.env``` file in **ms-note** folder  
-_Note: use the same credentials as in the MongoDB database._
+_Note: use the same credentials as for the MongoDB database._
 ```properties
 # MS-Note : MongoDB
 MONGODB_USER=
@@ -193,7 +193,7 @@ MS_GATEWAY_PASSWORD=
 ```
 
 Create an ```.env``` file in **ms-gateway** folder  
-_Note : use the same credentials as in the frontend .env file_
+_Note: use the same credentials as for the frontend .env file._
 ```properties
 # MS-Gateway & Frontend : authentification
 MS_GATEWAY_USER=
@@ -205,7 +205,7 @@ MS_GATEWAY_PASSWORD=
   cd ms-eureka
   mvn spring-boot:run
 ```
-Please respect this order:
+Please follow this order:
 1. ms-eureka
 2. ms-note, ms-patient, ms-riskassessment
 3. ms-gateway
@@ -224,9 +224,7 @@ Install and start the Frontend:
 Access the frontend at http://localhost:9080/
 
 # ✅ Unitary tests, code coverage and documentation
-```properties
-TODO: à finaliser
-```
+
 First you have to follow steps for local deployment.  
 Then run the commande from the folder of each microservice (except Frontend), example : 
 ```bash
