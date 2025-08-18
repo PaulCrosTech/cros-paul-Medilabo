@@ -1,11 +1,11 @@
 print("====> MongoDB initialization : Start");
-db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE);
+db = db.getSiblingDB("medilabo_note");
 
 let result = db.createUser({
     user: process.env.MONGO_INITDB_DATABASE_USER,
     pwd: process.env.MONGO_INITDB_DATABASE_PASSWORD,
     roles: [
-        {role: "readWrite", db: process.env.MONGO_INITDB_DATABASE}
+        {role: "readWrite", db: "medilabo_note"}
     ]
 });
 if (result.ok) {

@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/ms-patient/target" />
-  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/ms-patient/pom.xml" />
-        <option value="$PROJECT_DIR$/ms-gateway/pom.xml" />
-        <option value="$PROJECT_DIR$/ms-eureka/pom.xml" />
         <option value="$PROJECT_DIR$/ms-note/pom.xml" />
-        <option value="$PROJECT_DIR$/ms-riskassessment/pom.xml" />
         <option value="$PROJECT_DIR$/ms-config/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-eureka/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-patient/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-riskassessment/pom.xml" />
       </list>
     </option>
   </component>

@@ -63,11 +63,8 @@ services:
     container_name: medilabo_db_mongodb
     environment:
       MONGO_INITDB_DATABASE: medilabo_note
-      MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
-      MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
-    command:
-      - '--logpath'
-      - '/var/log/mongodb/mongod.log'
+      MONGO_INITDB_DATABASE_USER: ${MONGODB_USER}
+      MONGO_INITDB_DATABASE_PASSWORD: ${MONGODB_PASSWORD}
     volumes:
       - ./ms-note/src/main/resources/mongodb-init-docker.js:/docker-entrypoint-initdb.d/mongodb-init-docker.js:ro
       - mongoDB-for-MsNote:/data/db
@@ -117,8 +114,8 @@ services:
     networks:
       - rsx-backend
     environment:
-      MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
-      MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
+      MONGODB_USER: ${MONGODB_USER}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
 
   # Risk Microservice
@@ -160,16 +157,16 @@ services:
       - rsx-backend
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      MS_GATEWAY_SECURITY_USER: ${MS_GATEWAY_SECURITY_USER}
-      MS_GATEWAY_SECURITY_PASSWORD: ${MS_GATEWAY_SECURITY_PASSWORD}
+      MS_GATEWAY_USER: ${MS_GATEWAY_USER}
+      MS_GATEWAY_PASSWORD: ${MS_GATEWAY_PASSWORD}
 
   #   Frontend Service
   frontend:
     build:
       context: ./client-ui/frontend
       args:
-        MS_GATEWAY_SECURITY_USER: ${MS_GATEWAY_SECURITY_USER}
-        MS_GATEWAY_SECURITY_PASSWORD: ${MS_GATEWAY_SECURITY_PASSWORD}
+        MS_GATEWAY_USER: ${MS_GATEWAY_USER}
+        MS_GATEWAY_PASSWORD: ${MS_GATEWAY_PASSWORD}
     container_name: medilabo_frontend
     ports:
       - "9080:9080"

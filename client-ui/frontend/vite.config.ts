@@ -9,8 +9,8 @@ export default defineConfig(({mode}) => {
         plugins: [react()],
         server: {
             port: 9080,
-        },
-        envPrefix: ['MS_GATEWAY_SECURITY_', 'VITE_']
+        }
+        ,envPrefix: ['MS_GATEWAY_USER','MS_GATEWAY_PASSWORD','VITE_']
     };
 
     return isProduction ? config : {...config, envDir: '../../'};

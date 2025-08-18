@@ -1,8 +1,8 @@
 FROM node:latest
 LABEL org.opencontainers.image.authors="Paul CROS"
 
-ARG MS_GATEWAY_SECURITY_USER
-ARG MS_GATEWAY_SECURITY_PASSWORD
+ARG MS_GATEWAY_USER
+ARG MS_GATEWAY_PASSWORD
 
 # Copie les sources de l'application
 WORKDIR /opt/app-source
