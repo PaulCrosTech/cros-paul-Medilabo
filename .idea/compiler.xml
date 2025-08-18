@@ -8,8 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ms-eureka" />
-        <module name="ms-gateway" />
         <module name="ms-config" />
+        <module name="ms-gateway" />
       </profile>
       <profile name="Annotation profile for ms-riskassessment" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />

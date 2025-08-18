@@ -1,4 +1,5 @@
 .env
+secrets_ms_config_git_credentials.json
 ### IntelliJ IDEA ###
 .idea
 *.iws

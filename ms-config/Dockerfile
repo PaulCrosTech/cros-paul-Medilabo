@@ -1,7 +1,9 @@
 FROM maven:3.9.11-eclipse-temurin-21
-LABEL authors="Paul CROS"
+LABEL org.opencontainers.image.authors="Paul CROS"
 
-RUN mkdir /opt/app-source && \
+RUN apt-get update && \
+    apt-get install -y jq && \
+    mkdir /opt/app-source && \
     mkdir /opt/app
 
 ADD . /opt/app-source

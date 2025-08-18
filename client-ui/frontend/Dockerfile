@@ -1,5 +1,5 @@
 FROM node:latest
-LABEL authors="Paul CROS"
+LABEL org.opencontainers.image.authors="Paul CROS"
 
 ARG MS_GATEWAY_SECURITY_USER
 ARG MS_GATEWAY_SECURITY_PASSWORD
@@ -9,8 +9,8 @@ WORKDIR /opt/app-source
 COPY . .
 
 # Génre le fichier .env avec les variables d'environnement
-RUN chmod +x docker-generate-env.sh
-RUN ./docker-generate-env.sh
+RUN chmod +x /opt/app-source/docker-generate-env.sh
+RUN /opt/app-source/docker-generate-env.sh
 
 # Installe les dépendances et compile l'application
 RUN npm install

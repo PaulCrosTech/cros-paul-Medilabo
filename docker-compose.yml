@@ -7,9 +7,9 @@ services:
     build: ./ms-eureka
     container_name: medilabo_ms_eureka
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9002/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9002/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     networks:
       - rsx-backend
@@ -20,39 +20,40 @@ services:
     build: ./ms-config
     container_name: medilabo_ms_config
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9088/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9088/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     depends_on:
       ms-eureka:
         condition: service_healthy
     environment:
-      GIT_URI: ${GIT_URI}
-      GIT_USERNAME: ${GIT_USERNAME}
-      GIT_PASSWORD_PAT: ${GIT_PASSWORD_PAT}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      GIT_CREDENTIALS: /run/secrets/secrets_ms_config_git_credentials
     networks:
       - rsx-backend
-
+    secrets:
+      - secrets_ms_config_git_credentials
+    tmpfs:
+      - /run/secrets
 
   # MySQL Database Service
   dbMySQL:
     image: mysql:8.0
     container_name: medilabo_db_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: medilabo_patient
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
     networks:
       - rsx-backend
     volumes:
       - ./ms-patient/src/main/resources/docker/ms_patient_data.sql:/docker-entrypoint-initdb.d/ms_patient_data.sql:ro
       - mysql-for-MsPatient:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
-      interval: 10s
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root" ]
+      interval: 30s
       retries: 5
       timeout: 5s
 
@@ -61,31 +62,31 @@ services:
     image: mongo:latest
     container_name: medilabo_db_mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: medilabo_note
       MONGO_INITDB_DATABASE_USER: ${MONGO_INITDB_DATABASE_USER}
       MONGO_INITDB_DATABASE_PASSWORD: ${MONGO_INITDB_DATABASE_PASSWORD}
+    command:
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
     volumes:
-      - ./ms-note/src/main/resources/docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./ms-note/src/main/resources/mongodb-init-docker.js:/docker-entrypoint-initdb.d/mongodb-init-docker.js:ro
       - mongoDB-for-MsNote:/data/db
     networks:
       - rsx-backend
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 10s
+      interval: 30s
       retries: 5
       timeout: 5s
-    command: --quiet
 
   # Patient Microservice
   ms-patient:
     build: ./ms-patient
     container_name: medilabo_ms_patient
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9005/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9005/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     depends_on:
       ms-config:
@@ -104,9 +105,9 @@ services:
     build: ./ms-note
     container_name: medilabo_ms_note
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9006/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9006/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     depends_on:
       ms-config:
@@ -125,9 +126,9 @@ services:
     build: ./ms-riskassessment
     container_name: medilabo_ms_riskassessment
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9007/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9007/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     depends_on:
       ms-config:
@@ -144,9 +145,9 @@ services:
     ports:
       - "9001:9001"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9001/actuator/health | head -n 2 | grep -q '\"status\":\"UP\"'" ]
-      interval: 10s
-      retries: 3
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9001/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      interval: 30s
+      retries: 5
       timeout: 5s
     depends_on:
       ms-note:
@@ -186,3 +187,9 @@ networks:
 volumes:
   mongoDB-for-MsNote:
   mysql-for-MsPatient:
+
+
+# Configuration des secrets
+secrets:
+  secrets_ms_config_git_credentials:
+    file: ./secrets_ms_config_git_credentials.json

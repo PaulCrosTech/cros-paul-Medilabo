@@ -22,10 +22,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebFluxSecurity
 public class SpringSecurityConfig {
 
-    @Value("${ms-patient.security.username}")
+    @Value("${ms-gateway.security.username}")
     private String username;
 
-    @Value("${ms-patient.security.password}")
+    @Value("${ms-gateway.security.password}")
     private String password;
 
     /**
