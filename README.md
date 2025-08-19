@@ -11,16 +11,18 @@ This project is a medical application designed to manage patient data, store med
 ## Databases
 - **MySQL 8.0**
 - **MongoDB 8.0**
-## Frontend
-- **Vite 7.0**
-- **React 19.1**
-- **TypeScript 5.8.3**
-- **HTML5/CSS3**
 ## Build and test tools
 - **Maven 3.9.11**
 - **JUnit 5**
 - **Mockito**
 - **JaCoCo**
+## Frontend
+- **Vite 7.0**
+- **React 19.1**
+- **TypeScript 5.8.3**
+- **HTML5/CSS3**
+- **Node.js 22.18**
+- **NPM 10.9.3**
 
 # 🏗️ Architecture
 This project is built using a **microservices architecture** :  
