@@ -1,60 +1,63 @@
 # 🩺 Medilabo Solutions
 
 # 🔍 Project Overview
-```properties
-TODO: à quoi sert l'application
-```
+This project is a medical application designed to manage patient data, store medical notes, and calculate type 2 diabetes risk assessments. 
 
 # 🛠️ Technologies
-```properties
-TODO: à finaliser, trop long, à synthétiser avec le schéma de l'architecture
-```
-
 ## Backend
 - **Java 21**
 - **Spring Boot 3.5.4**
-- 
-- **Netflix Eureka** (Discovery service)
-- **Spring Cloud OpenFeign** (Communication between microservices)
-- **Spring Cloud Config** (Central management for configuration via Git, SVN, or HashiCorp Vault.)
-- **Spring Cloud Gateway** (API Gateway)
-- 
-- **Spring Data JPA** (Patient)
-- **Spring Data MongoDB** (Note)
-- **Spring Boot Actuator** (Monitoring)
-- 
-- **Lombok** (Annotations)
-- **Spring Security** (Authentication)
-- **MapStruct** (Mapping DTO/Entity)
-
+- **Spring Cloud 2025.0.0**
 ## Databases
 - **MySQL 8.0**
 - **MongoDB 8.0**
-
 ## Frontend
-- **Vite**
-- **TypeScript**
-- **ESLint**
-- **React**
-- **Axios** (HTTP client)
-- **React Boostrap**
-- **React Rooter**
+- **Vite 7.0**
+- **React 19.1**
+- **TypeScript 5.8.3**
 - **HTML5/CSS3**
-
 ## Build and test tools
-- **Maven 3.9.11** (Build)
-- **Docker** (Containerisation)
-- **Git** (Versioning)
-- **Jacoco** (Code Coverage)
+- **Maven 3.9.11**
 - **JUnit 5**
 - **Mockito**
-- **JaCoCo** (Code Coverage)
+- **JaCoCo**
 
 # 🏗️ Architecture
-```properties
-TODO: schéma de l'architecture microservices\
-  pour chaque microservice : description, techno utilisée, port
-```
+This project is built using a **microservices architecture** :  
+
+![Architecture Diagram](.github/readme_assets/architecture_diagram.jpg)
+
+- **Frontend** (client-ui/frontend:9080) : User interface for the application.  
+
+
+- **Api Gateway** (ms-gateway:9001) : Handles all API requests and routes them to the appropriate microservice.
+  - Spring Cloud Gateway
+  - Spring Boot Security (Basic Auth for authentication with the frontend)
+
+
+- **Patient** (ms-patient:9005) : Manages patient data.
+  - Spring Data JPA (MySQL)
+  - Spring Boot Actuator (Monitoring)
+
+
+- **Note** (ms-note:9006) : Manages medical notes.
+  - Spring Data MongoDB (MongoDB)
+  - Spring Boot Actuator (Monitoring)
+  - Spring Cloud OpenFeign (Communication with ms-patient)
+
+
+- **Risk Assessment** (ms-riskassessment:9007) : Calculates the risk of type 2 diabetes based on patient data.
+  - Spring Boot Actuator (Monitoring)
+  - Spring Cloud OpenFeign (Communication with ms-patient & ms-note)
+
+
+- **Config** (ms-config:9088) : Centralized configuration, stored on GitHub, for microservices.
+  - Spring Cloud Config Server
+
+
+- **Eureka** (ms-eureka:9002) : Service discovery for microservices.
+  - Spring Cloud Netflix Eureka
+
 
 # 🚀 Getting Started
 The project can be run locally or with Docker.  
@@ -139,11 +142,14 @@ Startup order:
 - ms-config
 - ms-note, ms-patient, ms-riskassessment
 - ms-gateway
-- Frontend 
+- Frontend
 
-Access the frontend at http://localhost:9080/
+_Note: Startup process uses health checks based on the Spring Boot Actuator (http://.../actuator/health route). 
+A virtual private network is established between the edges and microservices; only the frontend and API ports are exposed. 
+Databases are persisted between restarts, using Docker volumes._
 
-_Note: Databases are persisted between restarts._
+### 🚀 **Frontend access : [http://localhost:9080/](http://localhost:9080/)**
+
 
 ## 🖥️ Deployment in local
 
@@ -235,6 +241,19 @@ Then run the commande from the folder of each microservice (except Frontend), ex
 Surefire, JaCoCo and Javadoc are available at target/site/index.html of each microservice.
 
 # 🌱 Green code
-```properties
-TODO: à finaliser
-```
+Green code is an approach aimed at reducing the environmental impact of software operation.  
+
+**Hardware:** Favor virtual machines, containers, and cloud services to pool resources and lower energy consumption. Choose green hosting providers that use renewable energy and offset their carbon footprint.    
+Check if your hosting or website is green:
+- https://www.thegreenwebfoundation.org/ 
+
+**Software:** Optimize algorithms to reduce energy consumption and the resources required to run the application. The choice of language also matters: prefer languages and frameworks optimized for performance and energy efficiency.
+Tools to analyze and optimize your code:
+- SonarQube plugin: https://github.com/green-code-initiative/creedengo-java
+- Green IT Analysis: https://addons.mozilla.org/en-US/firefox/addon/greenit-analysis/
+- Lighthouse: https://developers.google.com/web/tools/lighthouse
+
+**Network:** Limit network calls, minify scripts and styles, reduce dependencies, and use caching. These practices help reduce bandwidth usage and the load on network infrastructure.
+Check if your website is network optimized:
+- https://www.webpagetest.org/
+- https://pagespeed.web.dev/
