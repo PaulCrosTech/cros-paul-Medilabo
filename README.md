@@ -1,7 +1,7 @@
 # 🩺 Medilabo Solutions
 
 # 🔍 Project Overview
-This project is a medical application designed to manage patient data, store medical notes, and calculate type 2 diabetes risk assessments. 
+This project is a medical application designed to manage patient data, medical notes, and calculate type 2 diabetes risk assessments. 
 
 # 🛠️ Technologies
 ## Backend
@@ -17,24 +17,24 @@ This project is a medical application designed to manage patient data, store med
 - **Mockito**
 - **JaCoCo**
 ## Frontend
-- **Vite 7.0**
 - **React 19.1**
+- **Vite 7.0**
 - **TypeScript 5.8.3**
 - **HTML5/CSS3**
 - **Node.js 22.18**
 - **NPM 10.9.3**
 
 # 🏗️ Architecture
-This project is built using a **microservices architecture** :  
+This project is built using a **microservices architecture**:
 
 ![Architecture Diagram](.github/readme_assets/architecture_diagram.jpg)
 
-- **Frontend** (client-ui/frontend:9080) : User interface for the application.  
+- **Frontend** (client-ui/frontend:9080) : User interface.
 
 
 - **Api Gateway** (ms-gateway:9001) : Handles all API requests and routes them to the appropriate microservice.
   - Spring Cloud Gateway
-  - Spring Boot Security (Basic Auth for authentication with the frontend)
+  - Spring Boot Security (Secure API endpoints with Basic Authentication)
 
 
 - **Patient** (ms-patient:9005) : Manages patient data.
@@ -48,36 +48,21 @@ This project is built using a **microservices architecture** :
   - Spring Cloud OpenFeign (Communication with ms-patient)
 
 
-- **Risk Assessment** (ms-riskassessment:9007) : Calculates the risk of type 2 diabetes based on patient data.
+- **Risk Assessment** (ms-riskassessment:9007) : Calculates the risk of type 2 diabetes based on patient datas and notes.
   - Spring Boot Actuator (Monitoring)
   - Spring Cloud OpenFeign (Communication with ms-patient & ms-note)
+
+
+- **Eureka** (ms-eureka:9002) : Service discovery for microservices.
+    - Spring Cloud Netflix Eureka
 
 
 - **Config** (ms-config:9003) : Centralized configuration, stored on GitHub, for microservices.
   - Spring Cloud Config Server
 
-
-- **Eureka** (ms-eureka:9002) : Service discovery for microservices.
-  - Spring Cloud Netflix Eureka
-
-
 # 🚀 Getting Started
-The project can be run locally or with Docker.  
-Docker is recommended for a quick start, as it simplifies the setup process.
+This project can be run in two ways; Docker is the easiest and fastest method.
 
-## 🗂️ Project architecture
-
-```properties
-cros-paul-Medilabo/
-├── 📂client-ui/
-│   └── 📂frontend/
-├── 📂ms-config/
-├── 📂ms-eureka/
-├── 📂ms-gateway/
-├── 📂ms-note/
-├── 📂ms-patient/
-├── 📂ms-riskassessment/
-```
 ## 📦 Clone the project
 
 ```bash
@@ -91,61 +76,24 @@ cros-paul-Medilabo/
 - Docker Compose (2.39.1)
 
 ### Installation steps
-
-Update ```.env``` file in the root folder.
-
-```properties
-# Activate the Docker profile
-SPRING_PROFILES_ACTIVE=docker
-
-# MS-Gateway & Frontend : authentification
-MS_GATEWAY_USER=
-MS_GATEWAY_PASSWORD=
-
-# MS-Patient : MySQL
-MYSQL_USER=
-MYSQL_PASSWORD=
-
-# MS-Note : MongoDB
-MONGODB_USER=
-MONGODB_PASSWORD=
-```
-
-Copy the file ```secrets_ms_config_git_credentials.json``` file in the root folder.  
-This file has been sent to you by the project manager.
-
-```json
-{
-  "MS_CONFIG_GIT_URI": "",
-  "MS_CONFIG_GIT_USERNAME": "",
-  "MS_CONFIG_GIT_PAT": ""
-}
-```
-_Note: This file contains the credentials required to access the Git repository where the microservices configuration files are stored. 
-In Docker mode, the ms-config service is essential as the configurations are fetched from the Git repository._
-
-Launch the project from the root directory:
+From the main project directory:
 ```bash
-  # Build the images
   docker-compose build
-  # Start the project in detached mode
+```
+
+### Run
+From the main project directory:
+```bash
   docker-compose up -d
-  # Stop the project
+```
+
+#### **Frontend access : [http://localhost:9080/](http://localhost:9080/)**
+
+### Stop
+From the main project directory:
+```bash
   docker-compose down
 ```
-
-Startup order:
-- ms-eureka, dbMySQL, dbMongoDB
-- ms-config
-- ms-note, ms-patient, ms-riskassessment
-- ms-gateway
-- Frontend
-
-_Note: Startup process uses health checks based on the Spring Boot Actuator (http://.../actuator/health route). 
-A virtual private network is established between the edges and microservices; only the frontend and API ports are exposed. 
-Databases are persisted between restarts, using Docker volumes._
-
-### 🚀 **Frontend access : [http://localhost:9080/](http://localhost:9080/)**
 
 ---
 
@@ -162,19 +110,25 @@ Databases are persisted between restarts, using Docker volumes._
 
 ### Installation steps
 
-Create a **MySQL** database with a user and privileges.
+Create **MySQL** database:
 ```SQL 
 CREATE DATABASE medilabo_patient;
 CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'mypassword';
 GRANT ALL PRIVILEGES ON medilabo_patient.* TO 'myuser'@'localhost';
 FLUSH PRIVILEGES;
 ```
-
-Create a **MongoDB** database and sample data.  
-Run the script `medilabo_note/src/main/resources/mongodb-init.js` with mongo shell:
+Create **MongoDB** database:
 ```BASH
-  mongosh < medilabo_note/src/main/resources/mongodb-init-local.js
+  mongosh < medilabo_note/src/main/resources/mongodb-init.js
 ```
+
+Install the Frontend dependencies:
+```bash
+  cd client-ui/frontend/
+  npm install
+```
+
+### Run
 
 **Start each microservice** from his folder, example: 
 ```bash
@@ -186,35 +140,31 @@ Please follow this order:
 2. ms-note, ms-patient, ms-riskassessment
 3. ms-gateway
 
-_Note: in manual mode, the ms-config isn't needed because configurations are stored locally (See application-local.properties in corresponding microservice)._ 
+_Note: The ms-config isn't needed because configurations are stored locally (See application-dev.properties in corresponding microservice)._ 
 
-Install and start the Frontend: 
+**Start the Frontend:** 
 ```bash
   cd client-ui/frontend/
-  # Install dependencies
-  npm install
-  # Start the frontend
   npm run dev
 ```
 
-Access the frontend at http://localhost:9080/
+#### **Frontend access : [http://localhost:9080/](http://localhost:9080/)**
 
 ---
 
 # 🌱 Green code
-Green code is an approach aimed at reducing the environmental impact of software operation.  
+Green code is an approach aimed at reducing the environmental impact of software operation.
+It focuses on optimizing hardware, software, and network usage to minimize energy consumption and carbon footprint.
 
-**Hardware:** Favor virtual machines, containers, and cloud services to pool resources and lower energy consumption. Choose green hosting providers that use renewable energy and offset their carbon footprint.    
-Check if your hosting or website is green:
-- https://www.thegreenwebfoundation.org/ 
-
-**Software:** Optimize algorithms to reduce energy consumption and the resources required to run the application. The choice of language also matters: prefer languages and frameworks optimized for performance and energy efficiency.
-Tools to analyze and optimize your code:
-- SonarQube plugin: https://github.com/green-code-initiative/creedengo-java
-- Green IT Analysis: https://addons.mozilla.org/en-US/firefox/addon/greenit-analysis/
-- Lighthouse: https://developers.google.com/web/tools/lighthouse
-
-**Network:** Limit network calls, minify scripts and styles, reduce dependencies, and use caching. These practices help reduce bandwidth usage and the load on network infrastructure.
-Check if your website is network optimized:
-- https://www.webpagetest.org/
-- https://pagespeed.web.dev/
+Here are some points for improvement to make the application greener:
+- **Network**: 
+  - Integrate Caffeine as a cache manager in Spring Cloud Gateway.
+  - Minimize dependencies, images, script and use CDN for the frontend.
+  - Use small docker images.
+- **Software**:
+  - Optimize algorithms, like risk assessment calculation.
+  - Choose a language and framework optimized for performance and energy efficiency. (Java and Spring Boot are well-suited for this purpose)
+  - Use tools to analyze and optimize your code.
+- **Hardware**:
+  - Choose a green hosting provider to reduce the carbon footprint of the application.
+  - Favor virtual machines, containers, and cloud services to pool resources and lower energy consumption.
