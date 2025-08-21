@@ -53,7 +53,7 @@ This project is built using a **microservices architecture** :
   - Spring Cloud OpenFeign (Communication with ms-patient & ms-note)
 
 
-- **Config** (ms-config:9088) : Centralized configuration, stored on GitHub, for microservices.
+- **Config** (ms-config:9003) : Centralized configuration, stored on GitHub, for microservices.
   - Spring Cloud Config Server
 
 
@@ -88,7 +88,7 @@ cros-paul-Medilabo/
 ```bash
   git clone https://github.com/paulc/cros-paul-Medilabo.git
 ```
-
+---
 ## 🐳 Deployment with Docker
 
 ### Prerequisites
@@ -97,7 +97,7 @@ cros-paul-Medilabo/
 
 ### Installation steps
 
-Create an ```.env``` file in the root folder.
+Update ```.env``` file in the root folder.
 
 ```properties
 # Activate the Docker profile
@@ -152,8 +152,9 @@ Databases are persisted between restarts, using Docker volumes._
 
 ### 🚀 **Frontend access : [http://localhost:9080/](http://localhost:9080/)**
 
+---
 
-## 🖥️ Deployment in local
+## 🖥️ Deployment without Docker
 
 ### Prerequisites
 - Java (21)
@@ -165,11 +166,13 @@ Databases are persisted between restarts, using Docker volumes._
 
 ### Installation steps
 
-Create a **MySQL** database
+Create a **MySQL** database with a user and privileges.
 ```SQL 
 CREATE DATABASE medilabo_patient;
+CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'mypassword';
+GRANT ALL PRIVILEGES ON medilabo_patient.* TO 'myuser'@'localhost';
+FLUSH PRIVILEGES;
 ```
-_Note: data aren't persistes between restarts._
 
 Create a **MongoDB** database with sample data.  
 Use the script `medilabo_note/src/main/resources/mongodb-init-local.js` to create the database and insert sample data.
@@ -183,30 +186,12 @@ Run the script with mongo shell.
 ```BASH
   mongosh < medilabo_note/src/main/resources/mongodb-init-local.js
 ```
-_Note: data are persisted between restarts, you can re-run the script to re-create the data._
 
-Create an ```.env``` file in **ms-note** folder  
-_Note: use the same credentials as for the MongoDB database._
-```properties
-# MS-Note : MongoDB
-MONGODB_USER=
-MONGODB_PASSWORD=
-```
+Updater ```.env``` file in **ms-note** folder, use the same credentials as for the MongoDB database.
 
-Create an ```.env``` file in **frontend** folder
-```properties
-# MS-Gateway & Frontend : authentification
-MS_GATEWAY_USER=
-MS_GATEWAY_PASSWORD=
-```
+Update ```.env``` file in **frontend** folder, specify your credentials.
 
-Create an ```.env``` file in **ms-gateway** folder  
-_Note: use the same credentials as for the frontend .env file._
-```properties
-# MS-Gateway & Frontend : authentification
-MS_GATEWAY_USER=
-MS_GATEWAY_PASSWORD=
-```
+Update ```.env``` file in **ms-gateway** folder, use the same credentials as for the frontend .env file.
 
 **Start each microservice** from his folder, example: 
 ```bash
@@ -218,7 +203,7 @@ Please follow this order:
 2. ms-note, ms-patient, ms-riskassessment
 3. ms-gateway
 
-_Note: in local mode, the ms-config isn't needed because configurations are stored locally (See application-local.properties in corresponding microservice)._ 
+_Note: in manual mode, the ms-config isn't needed because configurations are stored locally (See application-local.properties in corresponding microservice)._ 
 
 Install and start the Frontend: 
 ```bash
@@ -231,16 +216,7 @@ Install and start the Frontend:
 
 Access the frontend at http://localhost:9080/
 
-# ✅ Unitary tests, code coverage and documentation
-
-First you have to follow steps for local deployment.  
-Then run the commande from the folder of each microservice (except Frontend), example : 
-```bash
-  cd ms-patient
-  mvn clean test site
-```
-
-Surefire, JaCoCo and Javadoc are available at target/site/index.html of each microservice.
+---
 
 # 🌱 Green code
 Green code is an approach aimed at reducing the environmental impact of software operation.  

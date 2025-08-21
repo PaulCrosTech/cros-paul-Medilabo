@@ -20,7 +20,7 @@ services:
     build: ./ms-config
     container_name: medilabo_ms_config
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9088/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
+      test: [ "CMD", "sh", "-c", "curl -s http://localhost:9003/actuator/health | jq -e '.status == \"UP\"' > /dev/null && exit 0 || exit 1" ]
       interval: 30s
       retries: 5
       timeout: 5s
@@ -28,14 +28,9 @@ services:
       ms-eureka:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      GIT_CREDENTIALS: /run/secrets/secrets_ms_config_git_credentials
+      SPRING_PROFILES_ACTIVE: "docker"
     networks:
       - rsx-backend
-    secrets:
-      - secrets_ms_config_git_credentials
-    tmpfs:
-      - /run/secrets
 
   # MySQL Database Service
   dbMySQL:
@@ -43,8 +38,8 @@ services:
     container_name: medilabo_db_mysql
     environment:
       MYSQL_DATABASE: medilabo_patient
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: "myuser"
+      MYSQL_PASSWORD: "mypassword"
       MYSQL_ALLOW_EMPTY_PASSWORD: true
     networks:
       - rsx-backend
@@ -63,10 +58,8 @@ services:
     container_name: medilabo_db_mongodb
     environment:
       MONGO_INITDB_DATABASE: medilabo_note
-      MONGO_INITDB_DATABASE_USER: ${MONGODB_USER}
-      MONGO_INITDB_DATABASE_PASSWORD: ${MONGODB_PASSWORD}
     volumes:
-      - ./ms-note/src/main/resources/mongodb-init-docker.js:/docker-entrypoint-initdb.d/mongodb-init-docker.js:ro
+      - ./ms-note/src/main/resources/mongodb-init.js:/docker-entrypoint-initdb.d/mongodb-init.js:ro
       - mongoDB-for-MsNote:/data/db
     networks:
       - rsx-backend
@@ -93,9 +86,7 @@ services:
     networks:
       - rsx-backend
     environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_PROFILES_ACTIVE: "docker"
 
     # Note Microservice
   ms-note:
@@ -114,9 +105,7 @@ services:
     networks:
       - rsx-backend
     environment:
-      MONGODB_USER: ${MONGODB_USER}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_PROFILES_ACTIVE: "docker"
 
   # Risk Microservice
   ms-riskassessment:
@@ -133,7 +122,7 @@ services:
     networks:
       - rsx-backend
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_PROFILES_ACTIVE: "docker"
 
   # Gateway Microservice
   ms-gateway:
@@ -156,17 +145,12 @@ services:
     networks:
       - rsx-backend
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      MS_GATEWAY_USER: ${MS_GATEWAY_USER}
-      MS_GATEWAY_PASSWORD: ${MS_GATEWAY_PASSWORD}
+      SPRING_PROFILES_ACTIVE: "docker"
 
   #   Frontend Service
   frontend:
     build:
       context: ./client-ui/frontend
-      args:
-        MS_GATEWAY_USER: ${MS_GATEWAY_USER}
-        MS_GATEWAY_PASSWORD: ${MS_GATEWAY_PASSWORD}
     container_name: medilabo_frontend
     ports:
       - "9080:9080"
@@ -184,9 +168,3 @@ networks:
 volumes:
   mongoDB-for-MsNote:
   mysql-for-MsPatient:
-
-
-# Configuration des secrets
-secrets:
-  secrets_ms_config_git_credentials:
-    file: ./secrets_ms_config_git_credentials.json

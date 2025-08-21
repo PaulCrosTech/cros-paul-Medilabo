@@ -1,33 +1,14 @@
-/*
-    This Script is for 'local' mode.
-    It creates the database, the user, the collection and populate it with some data.
-    You can re-run it to reset the database.
-
-	Please modify:
-	- the Username (line 9)
-	- the Password (line 10)
-*/
-let username = "myuser";
-let password = "mypassword";
-
+print("====> MongoDB initialization : Start");
 db = db.getSiblingDB("medilabo_note");
-db.createCollection("notes");
 
-let user = db.getUser(username);
-if (user) {
-    db.grantRolesToUser(username, [
-        {role: "readWrite", db: "medilabo_note"}
-    ]);
+result = db.createCollection('notes');
+if (result.ok) {
+    print("====> MongoDB initialization : Collection 'notes' created successfully");
 } else {
-    db.createUser({
-        user: username,
-        pwd: password,
-        roles: [
-            {role: "readWrite", db: "medilabo_note"}
-        ]
-    });
+    print("====> MongoDB initialization : Failed to create collection 'notes'");
 }
-db.notes.insertMany([
+
+result = db.notes.insertMany([
     {
         "patientId": 1,
         "lastName": "TestNone",
@@ -74,4 +55,18 @@ db.notes.insertMany([
         "note": "Taille, Poids, Cholestérol, Vertige et Réaction"
     }
 ]);
-db.notes.updateMany({createdAt: {$exists: false}}, {$set: {createdAt: new Date()}});
+if (result.acknowledged) {
+    print("====> MongoDB initialization : Sample data inserted successfully");
+} else {
+    print("====> MongoDB initialization : Failed to insert sample data");
+}
+
+result = db.notes.updateMany({createdAt: {$exists: false}}, {$set: {createdAt: new Date()}});
+if (result.acknowledged) {
+    print("====> MongoDB initialization : createdAt field updated successfully");
+} else {
+    print("====> MongoDB initialization : Failed to update createdAt field");
+}
+
+
+print("====> MongoDB initialization : Finish");
