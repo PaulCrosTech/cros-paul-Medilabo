@@ -59,6 +59,7 @@ This project is built using a **microservices architecture**:
 
 - **Config** (ms-config:9003) : Centralized configuration, stored on GitHub, for microservices.
   - Spring Cloud Config Server
+  - Link to the configuration repository: [cros-paul-Medilabo-config](https://github.com/PaulCrosTech/cros-paul-Medilabo-Config)
 
 # 🚀 Getting Started
 This project can be run in two ways; Docker is the easiest and fastest method.
