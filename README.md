@@ -74,14 +74,9 @@ cros-paul-Medilabo/
 ├── 📂ms-config/
 ├── 📂ms-eureka/
 ├── 📂ms-gateway/
-│   └── 📝.env                                # Env (Local mode)
 ├── 📂ms-note/
-│   └── 📝.env                                # Env (Local mode)
 ├── 📂ms-patient/
-│   └── 📝.env                                # Env (Local mode)
 ├── 📂ms-riskassessment/
-├── 📝secrets_ms_config_git_credentials.json  # Git credentials for ms-config (Docker mode)
-└── 📝.env                                    # Env (Docker mode)
 ```
 ## 📦 Clone the project
 
@@ -161,6 +156,7 @@ Databases are persisted between restarts, using Docker volumes._
 - Maven (3.9.11)
 - MySQL (8.0)
 - MongoDB (8.0)
+- Mongosh (2.5.6)
 - Node (22.18)
 - NPM (10.9.3)
 
@@ -174,24 +170,11 @@ GRANT ALL PRIVILEGES ON medilabo_patient.* TO 'myuser'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-Create a **MongoDB** database with sample data.  
-Use the script `medilabo_note/src/main/resources/mongodb-init-local.js` to create the database and insert sample data.
-Before running it, set up the username and password, you will need them for microservice ms-note too.
-```js
-let username = "";
-let password = "";
-```
-
-Run the script with mongo shell.
+Create a **MongoDB** database and sample data.  
+Run the script `medilabo_note/src/main/resources/mongodb-init.js` with mongo shell:
 ```BASH
   mongosh < medilabo_note/src/main/resources/mongodb-init-local.js
 ```
-
-Updater ```.env``` file in **ms-note** folder, use the same credentials as for the MongoDB database.
-
-Update ```.env``` file in **frontend** folder, specify your credentials.
-
-Update ```.env``` file in **ms-gateway** folder, use the same credentials as for the frontend .env file.
 
 **Start each microservice** from his folder, example: 
 ```bash
