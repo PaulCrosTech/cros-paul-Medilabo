@@ -155,6 +155,7 @@ function PatientList() {
                         Êtes-vous sûr de vouloir supprimer <br/> le patient :
                         <strong className={"p-1"}>
                             {patients.find(p => p.patientId === selectedPatientId)?.firstName ?? ""}
+                            &nbsp;
                             {patients.find(p => p.patientId === selectedPatientId)?.lastName ?? ""}
                         </strong>
                         ?
