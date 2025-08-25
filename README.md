@@ -79,12 +79,20 @@ This project can be run in two ways; Docker is the easiest and fastest method.
 ### Installation steps
 From the main project directory:
 ```bash
+  # Linux/MacOS
+  docker compose build
+  
+  # Windows (PowerShell)
   docker-compose build
 ```
 
 ### Run
 From the main project directory:
 ```bash
+  # Linux/MacOS
+  docker compose up -d
+  
+  # Windows (PowerShell)
   docker-compose up -d
 ```
 
@@ -93,6 +101,10 @@ From the main project directory:
 ### Stop
 From the main project directory:
 ```bash
+  # Linux/MacOS
+  docker compose down
+  
+  # Windows (PowerShell)
   docker-compose down
 ```
 

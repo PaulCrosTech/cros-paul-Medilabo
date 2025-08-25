@@ -283,6 +283,7 @@ function NoteList() {
                             <button type="submit"
                                     className="btn btn-success text-white">
                                 <FontAwesomeIcon icon={faNotesMedical}/>
+                                &nbsp; Créer
                             </button>
                         </td>
                     </tr>

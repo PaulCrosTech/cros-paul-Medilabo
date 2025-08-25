@@ -110,7 +110,6 @@ function PatientList() {
             <Table striped bordered hover>
                 <thead>
                 <tr>
-                    <th>#</th>
                     <th>Prénom</th>
                     <th>Nom</th>
                     <th>Sexe</th>
@@ -124,7 +123,6 @@ function PatientList() {
                 {patients.map(patient => (
                     <tr key={patient.patientId} style={{cursor: 'pointer'}}
                         onClick={() => handleRowClick(patient.patientId)}>
-                        <td>{patient.patientId}</td>
                         <td>{patient.firstName}</td>
                         <td>{patient.lastName}</td>
                         <td>{patient.gender}</td>
